@@ -11,6 +11,7 @@ import petcare.petcare.model.Dueno;
 import petcare.petcare.model.Mascota;
 import petcare.petcare.repository.DuenoRepository;
 import petcare.petcare.repository.MascotaRepository;
+import petcare.petcare.service.DogCatApiService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MascotaController {
 
     private final MascotaRepository mascotaRepository;
     private final DuenoRepository duenoRepository;
+    private final DogCatApiService dogCatApiService;
 
     @GetMapping("/mascotas")
     public String listarMascotas(Model model) {
@@ -56,6 +58,14 @@ public class MascotaController {
         if (fechaNacimiento != null && !fechaNacimiento.isBlank()) {
             mascota.setFechaNacimiento(LocalDate.parse(fechaNacimiento));
         }
+
+        // Integrar imagen de Dog/Cat API basada en especie
+        if ("PERRO".equalsIgnoreCase(especie)) {
+            mascota.setFotoUrl(dogCatApiService.obtenerImagenPerroAleatoria());
+        } else if ("GATO".equalsIgnoreCase(especie)) {
+            mascota.setFotoUrl(dogCatApiService.obtenerImagenGatoAleatoria());
+        }
+        // Para otras especies, fotoUrl queda null
 
         mascotaRepository.save(mascota);
         return "redirect:/mascotas";
