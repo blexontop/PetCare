@@ -32,6 +32,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Especie</th>
+            <th>Foto</th>
             <th>Dueño</th>
             <th>Acciones</th>
         </tr>
@@ -41,6 +42,10 @@
             <td th:text="${m.id}"></td>
             <td th:text="${m.nombre}"></td>
             <td th:text="${m.especie}"></td>
+            <td>
+                <img th:if="${m.fotoUrl != null}" th:src="${m.fotoUrl}" alt="Foto de mascota" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                <span th:if="${m.fotoUrl == null}">Sin foto</span>
+            </td>
             <td th:text="${m.dueno != null ? m.dueno.nombre : 'Sin dueño'}"></td>
             <td>
                 <a th:href="@{'/mascotas/' + ${m.id} + '/eliminar'}" class="btn btn-sm btn-danger">Eliminar</a>

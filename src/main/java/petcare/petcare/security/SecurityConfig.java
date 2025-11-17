@@ -14,6 +14,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/mascotas", "/mascotas/**").permitAll()  // Permitir acceso a mascotas sin login TAMBIÉN HAY QUE BORRARLA AL CONFIGURAR EL OAUTH
                 .requestMatchers("/admin/**").authenticated()
                 // .anyRequest().authenticated()  // Comentado temporalmente para deshabilitar login
                 .anyRequest().permitAll()  // Permitir todo temporalmente
@@ -25,7 +26,8 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutSuccessUrl("/")
                 .permitAll()
-            );
+            )
+            .csrf(csrf -> csrf.disable());  // Deshabilitar CSRF temporalmente para permitir POST sin token TAMBIÉN HAY QUE BORRARLA AL CONFIGURAR EL OAUTH
 
         return http.build();
     }
