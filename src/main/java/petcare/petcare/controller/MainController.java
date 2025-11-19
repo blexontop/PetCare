@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import petcare.petcare.model.User;
 import petcare.petcare.repository.UserRepository;
+import petcare.petcare.service.EmailService;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class MainController {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;   // 👈 inyectamos EmailService
 
     @GetMapping("/")
     public String home() {
@@ -35,16 +37,25 @@ public class MainController {
             String picture = principal.getAttribute("picture");
 
             if (email != null) {
-                User user = userRepository.findByEmail(email).orElseGet(() -> {
-                    User nuevo = User.builder()
+                // Buscamos el usuario en la BBDD
+                User user = userRepository.findByEmail(email).orElse(null);
+
+                // Si no existe → primer login = "registro"
+                if (user == null) {
+                    user = User.builder()
                             .email(email)
                             .name(name != null ? name : email)
                             .picture(picture)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
-                    return userRepository.save(nuevo);
-                });
+
+                    user = userRepository.save(user);
+
+                    // 💌 Email de bienvenida SOLO la primera vez
+                    emailService.sendWelcomeEmail(user.getEmail(), user.getName());
+                }
+
                 model.addAttribute("usuario", user);
             }
         }
