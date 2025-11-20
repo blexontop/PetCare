@@ -19,7 +19,9 @@ public class WeatherService {
         String geoUrl = "https://geocoding-api.open-meteo.com/v1/search?name=" + city +
                 "&count=1&language=es&format=json";
 
-        Map<?, ?> geoResponse = restTemplate.getForObject(geoUrl, Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> geoResponse = (Map<String, Object>) restTemplate.getForObject(geoUrl, Map.class);
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> results =
                 (List<Map<String, Object>>) geoResponse.get("results");
 
@@ -37,7 +39,9 @@ public class WeatherService {
                 "&longitude=" + lon +
                 "&current_weather=true";
 
-        Map<?, ?> weatherResponse = restTemplate.getForObject(weatherUrl, Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> weatherResponse = (Map<String, Object>) restTemplate.getForObject(weatherUrl, Map.class);
+        @SuppressWarnings("unchecked")
         Map<String, Object> current =
                 (Map<String, Object>) weatherResponse.get("current_weather");
 

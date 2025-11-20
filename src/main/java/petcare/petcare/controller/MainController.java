@@ -31,6 +31,7 @@ public class MainController {
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = null;
         if (principal != null) {
             String email = principal.getAttribute("email");
             String name = principal.getAttribute("name");
@@ -38,7 +39,7 @@ public class MainController {
 
             if (email != null) {
                 // Buscamos el usuario en la BBDD
-                User user = userRepository.findByEmail(email).orElse(null);
+                user = userRepository.findByEmail(email).orElse(null);
 
                 // Si no existe → primer login = "registro"
                 if (user == null) {
@@ -55,10 +56,9 @@ public class MainController {
                     // 💌 Email de bienvenida SOLO la primera vez
                     emailService.sendWelcomeEmail(user.getEmail(), user.getName());
                 }
-
-                model.addAttribute("usuario", user);
             }
         }
+        model.addAttribute("usuario", user);
         return "dashboard";
     }
 }

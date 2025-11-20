@@ -18,7 +18,7 @@ public class ApiMapa {
     // 1. GEOCODIFICACIÓN: /api/mapa/geocodificar?direccion=...
     // -------------------------------------------------------------------------
     @GetMapping("/geocodificar")
-    public Map[] geocodificarDireccion(@RequestParam String direccion) {
+    public Map<String, Object>[] geocodificarDireccion(@RequestParam String direccion) {
 
         URI uri = UriComponentsBuilder
                 .fromUriString("https://nominatim.openstreetmap.org/search")
@@ -28,7 +28,9 @@ public class ApiMapa {
                 .build()
                 .toUri();
 
-        return restTemplate.getForObject(uri, Map[].class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] response = (Map<String, Object>[]) restTemplate.getForObject(uri, Map[].class);
+        return response;
     }
 
     // -------------------------------------------------------------------------
@@ -37,7 +39,7 @@ public class ApiMapa {
     @GetMapping("/coordenadas")
     public Double[] obtenerCoordenadas(@RequestParam String direccion) {
 
-        Map[] response = geocodificarDireccion(direccion);
+        Map<String, Object>[] response = geocodificarDireccion(direccion);
 
         if (response != null && response.length > 0) {
             Double lat = Double.parseDouble((String) response[0].get("lat"));
