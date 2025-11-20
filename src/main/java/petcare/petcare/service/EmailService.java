@@ -13,10 +13,10 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.mail.from}")
+    @Value("${app.mail.from:your-email@example.com}")
     private String from;
 
-    @Value("${app.frontend.base-url}")
+    @Value("${app.frontend.base-url:http://localhost:8080}")
     private String frontendBaseUrl;
 
     // 1) Email de bienvenida al registrarse un nuevo usuario
