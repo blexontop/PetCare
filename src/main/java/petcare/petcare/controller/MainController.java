@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import petcare.petcare.model.AuthProvider;
@@ -116,11 +115,5 @@ public class MainController {
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/login/oauth2/code/google")
-    public String handleCallback(@RequestParam("code") String code, Model model) {
-        // Si llegas aquí, el problema no es que Spring no maneja la ruta, sino lo que hace después.
-        model.addAttribute("authCode", code);
-        // Deberías ver este mensaje en el navegador
-        return "Código de Autorización Recibido: " + code;
-    }
+
 }
