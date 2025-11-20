@@ -22,11 +22,46 @@
 
 <div class="container">
     <h1>Mi Dashboard</h1>
+
+    <!-- Mensajes de éxito/error -->
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
     <div th:if="${usuario != null}">
-        <p><strong>Nombre:</strong> <span th:text="${usuario.name}"></span></p>
-        <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-        <div th:if="${usuario.picture != null}">
-            <img th:src="${usuario.picture}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 150px;">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Información del Usuario</h5>
+                <p><strong>Nombre:</strong> <span th:text="${usuario.name}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+                <div th:if="${usuario.picture != null}">
+                    <img th:src="${usuario.picture}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 150px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mis Mascotas</h5>
+                        <p class="card-text">Gestiona tus mascotas registradas.</p>
+                        <a href="/mascotas" class="btn btn-primary">Ver Mascotas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mapa</h5>
+                        <p class="card-text">Encuentra veterinarios cercanos.</p>
+                        <a href="/mapa" class="btn btn-success">Ver Mapa</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div th:if="${usuario == null}">
