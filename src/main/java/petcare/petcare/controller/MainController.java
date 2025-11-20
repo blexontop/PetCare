@@ -6,7 +6,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import petcare.petcare.model.AuthProvider;
+import petcare.petcare.model.Dueno;
 import petcare.petcare.model.User;
+import petcare.petcare.repository.DuenoRepository;
 import petcare.petcare.repository.UserRepository;
 import petcare.petcare.service.EmailService;
 
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 public class MainController {
 
     private final UserRepository userRepository;
+    private final DuenoRepository duenoRepository;
     private final EmailService emailService;   // 👈 inyectamos EmailService
 
     @GetMapping("/")
@@ -47,11 +51,19 @@ public class MainController {
                             .email(email)
                             .name(name != null ? name : email)
                             .picture(picture)
+                            .provider(AuthProvider.GOOGLE)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
 
                     user = userRepository.save(user);
+
+                    // Crear también un registro en Dueno
+                    Dueno dueno = Dueno.builder()
+                            .nombre(name != null ? name : email)
+                            .email(email)
+                            .build();
+                    duenoRepository.save(dueno);
 
                     // 💌 Email de bienvenida SOLO la primera vez
                     emailService.sendWelcomeEmail(user.getEmail(), user.getName());
