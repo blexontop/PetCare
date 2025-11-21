@@ -51,11 +51,13 @@ public class MainController {
 
                 // Si no existe → primer login = "registro"
                 if (user == null) {
+                    Role userRole = email.equals("misaelbarreraojedagit@gmail.com") ? Role.ADMIN : Role.USER;
                     user = User.builder()
                             .email(email)
                             .name(name != null ? name : email)
                             .picture(picture)
                             .provider(AuthProvider.GOOGLE)
+                            .role(userRole)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();

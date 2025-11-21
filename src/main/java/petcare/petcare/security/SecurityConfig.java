@@ -27,7 +27,9 @@ public class SecurityConfig {
                 .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/debug/**").permitAll()
-                .requestMatchers("/admin/**").authenticated()
+                .requestMatchers("/mapa").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/mascotas").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
