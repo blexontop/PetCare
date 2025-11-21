@@ -32,6 +32,7 @@ public class AdminController {
                 model.addAttribute("numMascotas", mascotaRepository.count());
                 model.addAttribute("numCitas", citaRepository.count());
                 model.addAttribute("numVeterinarios", veterinarioRepository.count());
+                model.addAttribute("mascotas", mascotaRepository.findAll());
                 return "admin";
             }
         }

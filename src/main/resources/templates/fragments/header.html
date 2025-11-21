@@ -48,8 +48,8 @@
                 </li>
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <img th:if="${usuario != null and usuario.picture != null}" th:src="${usuario.picture}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
-                        <i th:if="${usuario == null or usuario.picture == null}" class="fas fa-user-circle me-2"></i>
+                        <img th:if="${usuario != null and usuario.picture != null and usuario.picture != ''}" th:src="${usuario.picture}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                        <i th:if="${usuario == null or usuario.picture == null or usuario.picture == ''}" class="fas fa-user-circle me-2"></i>
                         <span th:if="${usuario != null}" th:text="${usuario.name}"></span>
                         <span th:if="${usuario == null}">Usuario</span>
                     </a>

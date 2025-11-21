@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer</title>
+</head>
+<body>
+<footer th:fragment="footer" class="bg-dark text-light mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-paw me-2"></i>Petcare
+                </h5>
+                <p class="mb-0">La mejor plataforma para el cuidado integral de tus mascotas.</p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="mb-3">Enlaces Rápidos</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/" class="text-light text-decoration-none">Inicio</a></li>
+                    <li><a href="/mascotas" class="text-light text-decoration-none">Mascotas</a></li>
+                    <li><a href="/mapa" class="text-light text-decoration-none">Veterinarios</a></li>
+                    <li><a href="/dashboard" class="text-light text-decoration-none">Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="mb-3">Contacto</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope me-2"></i>info@petcare.com</li>
+                    <li><i class="fas fa-phone me-2"></i>+34 900 123 456</li>
+                    <li><i class="fas fa-map-marker-alt me-2"></i>El Puerto de las Decepciones, España</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="mb-0">&copy; 2025 Petcare. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

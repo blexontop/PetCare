@@ -10,3 +10,32 @@ table.table td,
 table.table th {
     vertical-align: middle;
 }
+
+/* Custom green theme */
+.bg-primary {
+    background-color: #438a56 !important;
+}
+
+.text-primary {
+    color: #438a56 !important;
+}
+
+.btn-primary {
+    background-color: #438a56 !important;
+    border-color: #438a56 !important;
+}
+
+.btn-primary:hover {
+    background-color: #3a7a4a !important;
+    border-color: #3a7a4a !important;
+}
+
+.btn-outline-primary {
+    color: #438a56 !important;
+    border-color: #438a56 !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #438a56 !important;
+    border-color: #438a56 !important;
+}

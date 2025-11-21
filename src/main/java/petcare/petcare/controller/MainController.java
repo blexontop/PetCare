@@ -1,4 +1,4 @@
- bpackage petcare.petcare.controller;
+package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,6 +52,17 @@ public class MainController {
             String email = principal.getAttribute("email");
             String name = principal.getAttribute("name");
             String picture = principal.getAttribute("picture");
+            String login = principal.getAttribute("login"); // GitHub username
+
+            // For GitHub, email might be null initially, try to get it from attributes
+            if (email == null && principal.getAttributes().containsKey("email")) {
+                email = principal.getAttribute("email");
+            }
+
+            // If still no email, use GitHub login as fallback
+            if (email == null && login != null) {
+                email = login + "@github.local"; // Temporary email for GitHub users without public email
+            }
 
             if (email != null) {
                 // Buscamos el usuario en la BBDD
@@ -59,11 +70,17 @@ public class MainController {
 
                 // Si no existe → primer login = "registro"
                 if (user == null) {
+                    // Determine provider based on available attributes
+                    AuthProvider provider = AuthProvider.GOOGLE;
+                    if (login != null || principal.getAttributes().containsKey("id")) {
+                        provider = AuthProvider.GITHUB;
+                    }
+
                     user = User.builder()
                             .email(email)
-                            .name(name != null ? name : email)
+                            .name(name != null ? name : (login != null ? login : email))
                             .picture(picture)
-                            .provider(AuthProvider.GOOGLE)
+                            .provider(provider)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
@@ -72,7 +89,7 @@ public class MainController {
 
                     // Crear también un registro en Dueno básico
                     Dueno dueno = Dueno.builder()
-                            .nombre(name != null ? name : email)
+                            .nombre(name != null ? name : (login != null ? login : email))
                             .email(email)
                             .build();
                     duenoRepository.save(dueno);
@@ -106,6 +123,18 @@ public class MainController {
                                        RedirectAttributes redirectAttributes) {
         if (principal != null) {
             String email = principal.getAttribute("email");
+            String login = principal.getAttribute("login"); // GitHub username
+
+            // For GitHub, email might be null initially, try to get it from attributes
+            if (email == null && principal.getAttributes().containsKey("email")) {
+                email = principal.getAttribute("email");
+            }
+
+            // If still no email, use GitHub login as fallback
+            if (email == null && login != null) {
+                email = login + "@github.local"; // Temporary email for GitHub users without public email
+            }
+
             if (email != null) {
                 Dueno dueno = duenoRepository.findByEmail(email).orElse(null);
                 if (dueno != null) {
