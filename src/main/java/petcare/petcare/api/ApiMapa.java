@@ -96,4 +96,5 @@ public class ApiMapa {
 
         return R * c;
     }
+
 }

@@ -2,6 +2,8 @@ package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +19,10 @@ import com.itextpdf.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import petcare.petcare.model.Dueno;
 import petcare.petcare.model.Mascota;
+import petcare.petcare.model.User;
 import petcare.petcare.repository.DuenoRepository;
 import petcare.petcare.repository.MascotaRepository;
+import petcare.petcare.repository.UserRepository;
 import petcare.petcare.service.DogCatApiService;
 
 import java.io.IOException;
@@ -33,18 +37,29 @@ public class MascotaController {
     private final MascotaRepository mascotaRepository;
     private final DuenoRepository duenoRepository;
     private final DogCatApiService dogCatApiService;
+    private final UserRepository userRepository;
 
 
     @GetMapping("/mascotas")
-    public String listarMascotas(Model model) {
+    public String listarMascotas(@AuthenticationPrincipal OAuth2User principal, Model model) {
         List<Mascota> mascotas = mascotaRepository.findAll();
         model.addAttribute("mascotas", mascotas);
+        if (principal != null) {
+            String email = principal.getAttribute("email");
+            User user = userRepository.findByEmail(email).orElse(null);
+            model.addAttribute("usuario", user);
+        }
         return "mascotas";
     }
 
     @GetMapping("/mascotas/nueva")
-    public String mostrarFormularioNuevaMascota(Model model) {
+    public String mostrarFormularioNuevaMascota(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("duenos", duenoRepository.findAll());
+        if (principal != null) {
+            String email = principal.getAttribute("email");
+            User user = userRepository.findByEmail(email).orElse(null);
+            model.addAttribute("usuario", user);
+        }
         return "mascota-form";
     }
 
