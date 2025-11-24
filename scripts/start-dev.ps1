@@ -13,7 +13,7 @@ if (Test-Path $envFile) {
             $name = $parts[0].Trim()
             $value = $parts[1].Trim()
             Write-Output "Setting env $name"
-            $env:$name = $value
+            [System.Environment]::SetEnvironmentVariable($name, $value, 'Process')
         }
     }
 } else {
