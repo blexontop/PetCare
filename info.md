@@ -4,3 +4,8 @@
 
 ### Color usado:
 #438a56
+
+### AÑADIR Y BORRAR ROLES A USUARIOS
+INSERT INTO user_roles (user_id, role) VALUES (user_id_value, 'ROLE_ADMIN');
+
+DELETE FROM user_roles WHERE user_id = user_id_value AND role = 'ROLE_ADMIN';

@@ -82,6 +82,15 @@ CREATE TABLE cita (
   CONSTRAINT FK_cita_vet FOREIGN KEY (veterinario_id) REFERENCES veterinario(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE user_roles (
+  user_id BIGINT NOT NULL,
+  role VARCHAR(255) NOT NULL,
+  PRIMARY KEY (user_id, role),
+  CONSTRAINT FK_user_roles_user FOREIGN KEY (user_id)
+    REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 -- Datos de prueba (20 dueños)
 INSERT INTO dueno (id, nombre, email, telefono, direccion, ciudad) VALUES
 (1,'Ana López','ana.lopez@example.com','600111001','Calle Sol 1','Sevilla'),
