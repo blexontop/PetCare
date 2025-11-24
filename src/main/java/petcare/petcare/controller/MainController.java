@@ -1,6 +1,7 @@
 package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class MainController {
 
     private final UserRepository userRepository;
@@ -94,8 +96,12 @@ public class MainController {
                             .build();
                     duenoRepository.save(dueno);
 
-                    // 💌 Email de bienvenida SOLO la primera vez
-                    emailService.sendWelcomeEmail(user.getEmail(), user.getName());
+                    // 💌 Email de bienvenida SOLO la primera vez (protegemos contra fallos SMTP)
+                    try {
+                        emailService.sendWelcomeEmail(user.getEmail(), user.getName());
+                    } catch (Exception ex) {
+                        log.error("Error enviando email de bienvenida a {}: {}", user.getEmail(), ex.getMessage());
+                    }
 
                     // Redirigir al formulario de completar perfil
                     model.addAttribute("dueno", dueno);
