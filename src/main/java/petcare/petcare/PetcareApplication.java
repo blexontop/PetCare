@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.ApplicationRunner;
+import petcare.petcare.repository.UserRepository;
+
 
 @SpringBootApplication
 @EnableScheduling   // para tareas programadas (resúmenes)
@@ -20,5 +23,19 @@ public class PetcareApplication {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    // Ensure the known admin user has the ADMIN role on startup (non-destructive)
+    @Bean
+    public ApplicationRunner ensureAdmin(UserRepository userRepository) {
+        return args -> {
+            String adminEmail = "misaelbarreraojedagit@gmail.com";
+            userRepository.findByEmail(adminEmail).ifPresent(u -> {
+                if (u.getRoles() == null || !u.getRoles().contains("ROLE_ADMIN")) {
+                    u.addRole("ROLE_ADMIN");
+                    userRepository.save(u);
+                }
+            });
+        };
     }
 }
