@@ -3,8 +3,11 @@ package petcare.petcare.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
+=======
+>>>>>>> 70a1758ecd7502446008135e6b595da8d326de84
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -12,6 +15,17 @@ import petcare.petcare.model.Mascota;
 import petcare.petcare.repository.MascotaRepository;
 
 import java.io.ByteArrayOutputStream;
+<<<<<<< HEAD
+=======
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+
+import petcare.petcare.model.Mascota;
+import petcare.petcare.repository.MascotaRepository;
+
+import java.io.ByteArrayOutputStream;
+>>>>>>> 70a1758ecd7502446008135e6b595da8d326de84
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -42,6 +56,7 @@ public class ExportMascotaService {
         return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+<<<<<<< HEAD
     public byte[] exportToPDF() {
         List<Mascota> mascotas = mascotaRepository.findAll();
 
@@ -83,4 +98,47 @@ public class ExportMascotaService {
     }
 
     // Aquí también va el método exportToPDF() si lo añades
+=======
+    // Aquí también va el método exportToPDF() si lo añades
+    public byte[] exportToPDF() {
+    List<Mascota> mascotas = mascotaRepository.findAll();
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    try {
+        Document document = new Document();
+        PdfWriter.getInstance(document, baos);
+        document.open();
+
+        document.add(new Paragraph("Listado de Mascotas"));
+        document.add(new Paragraph(" "));
+        
+        PdfPTable table = new PdfPTable(6);
+        table.addCell("ID");
+        table.addCell("Nombre");
+        table.addCell("Especie");
+        table.addCell("Raza");
+        table.addCell("Peso");
+        table.addCell("Dueño");
+
+        for (Mascota m : mascotas) {
+            table.addCell(String.valueOf(m.getId()));
+            table.addCell(m.getNombre());
+            table.addCell(m.getEspecie());
+            table.addCell(m.getRaza() != null ? m.getRaza() : "");
+            table.addCell(m.getPeso() != null ? m.getPeso().toString() : "");
+            table.addCell(m.getDueno() != null ? m.getDueno().getNombre() : "");
+        }
+
+        document.add(table);
+        document.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return baos.toByteArray();
+}
+
+>>>>>>> 70a1758ecd7502446008135e6b595da8d326de84
 }
