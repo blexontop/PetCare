@@ -2,6 +2,12 @@ body {
     background-color: #f5f8fb;
 }
 
+/* Fondo específico para la página de formulario personal */
+body.mascota-form-page {
+    background-color: #438a56 !important;
+    min-height: 100vh;
+}
+
 .navbar-brand {
     font-weight: 600;
 }
@@ -40,6 +46,18 @@ table.table th {
     border-color: #438a56 !important;
 }
 
+.btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #5a6268 !important;
+    color: white !important;
+}
+
 /* ---------------------------------------------------------------------- */
 /* --- REGLAS PARA FORZAR EL COLOR DE TEXTO BLANCO SOBRE LA NAVBAR --- */
 /* ---------------------------------------------------------------------- */
@@ -68,4 +86,39 @@ table.table th {
 
 .dropdown-item:hover {
     background-color: #3a7a4a !important;
+}
+
+/* Botón outline secondary visible sobre fondo verde */
+.btn-outline-secondary {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    background-color: rgba(67, 138, 86, 0.3) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    color: #438a56 !important;
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Estilos para formulario de mascota personal */
+.form-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.form-floating>label {
+    padding: 1rem 0.75rem;
+}
+
+.pet-icon {
+    font-size: 3rem;
+    color: #438a56;
+    margin-bottom: 1rem;
 }

@@ -120,20 +120,19 @@
                                         </label>
                                     </div>
                                 </div>
-                                <input type="hidden" name="duenoId" th:if="${duenos == null}"
-                                    th:value="${usuario != null} ? ${usuario.dueno.id} : ''" />
 
                                 <div class="col-12 mt-4">
                                     <button type="submit" class="btn btn-primary w-100 mb-2">
                                         <i class="fas fa-save me-2"></i>Guardar Mascota
                                     </button>
-                                    <a href="/admin" class="btn btn-outline-secondary w-100">
+                                    <a href="/dashboard" class="btn btn-outline-secondary w-100">
                                         <i class="fas fa-arrow-left me-2"></i>Volver
                                     </a>
                                 </div>
                             </div>
+                            <input type="hidden" name="duenoId"
+                                th:value="${usuario != null and usuario.dueno != null} ? ${usuario.dueno.id} : ''" />
                         </form>
-
                     </div>
                 </div>
             </div>

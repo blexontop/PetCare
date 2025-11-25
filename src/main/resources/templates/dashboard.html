@@ -46,6 +46,42 @@
                 </div>
             </div>
 
+            <div class="card mb-4 shadow border-0">
+                <div class="card-body">
+                    <h4 class="mb-3">Mis Mascotas</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Especie</th>
+                                <th>Foto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="m : ${mascotas}">
+                                <td th:text="${m.id}"></td>
+                                <td th:text="${m.nombre}"></td>
+                                <td th:text="${m.especie}"></td>
+                                <td>
+                                    <img th:if="${m.fotoUrl != null}" th:src="@{${m.fotoUrl}}" alt="Foto de mascota"
+                                        style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                                    <span th:if="${m.fotoUrl == null}">Sin foto</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/mascotas/' + ${m.id} + '/editar'}"
+                                        class="btn btn-sm btn-primary me-1">Editar</a>
+                                    <a th:href="@{'/mascotas/' + ${m.id} + '/eliminar'}" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Estás seguro de eliminar esta mascota?');">Eliminar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a href="/mascotas/nueva/personal" class="btn btn-success mt-3">Añadir Mascota</a>
+                </div>
+            </div>
+
             <div class="row g-4">
                 <div class="col-md-12">
                     <div class="card h-100 shadow border-0">
