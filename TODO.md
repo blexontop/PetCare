@@ -16,8 +16,6 @@ Caché de datos frecuentes (subir nota)
 
 README
 
-Poner botón de acceder como invitado en el login, y dejar ver el mapa
-
 Presentación
 
 HECHOS:
@@ -27,3 +25,4 @@ Quitar weatherapi (no usado)
 Qué los usuarios registrados puedan crear, ver sus propios registros y consultar datos públicos
 Quitar iniciar sesión cuando se está iniciado
 Poder borrar cualquier mascota, tenga citas asociadas o no
+Poner botón de acceder como invitado en el login, y dejar ver el mapa
