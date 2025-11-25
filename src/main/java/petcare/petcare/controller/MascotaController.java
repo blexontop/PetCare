@@ -2,6 +2,7 @@ package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -39,37 +40,39 @@ public class MascotaController {
     private final DogCatApiService dogCatApiService;
     private final UserRepository userRepository;
 
-
-    @GetMapping("/mascotas")
-    public String listarMascotas(@AuthenticationPrincipal OAuth2User principal, Model model) {
-        List<Mascota> mascotas = mascotaRepository.findAll();
-        model.addAttribute("mascotas", mascotas);
-        if (principal != null) {
-            String email = principal.getAttribute("email");
-            User user = userRepository.findByEmail(email).orElse(null);
-            model.addAttribute("usuario", user);
-        }
-        return "mascotas";
-    }
+    @Value("${APP_ADMIN_EMAIL}")
+    private String adminEmail;
 
     @GetMapping("/mascotas/nueva")
     public String mostrarFormularioNuevaMascota(@AuthenticationPrincipal OAuth2User principal, Model model) {
-        model.addAttribute("duenos", duenoRepository.findAll());
-        if (principal != null) {
-            String email = principal.getAttribute("email");
-            User user = userRepository.findByEmail(email).orElse(null);
-            model.addAttribute("usuario", user);
+        if (principal == null) {
+            return "redirect:/login";
         }
+        String email = principal.getAttribute("email");
+        if (!adminEmail.equals(email)) {
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("duenos", duenoRepository.findAll());
+        User user = userRepository.findByEmail(email).orElse(null);
+        model.addAttribute("usuario", user);
         return "mascota-form";
     }
 
     @PostMapping("/mascotas")
-    public String guardarMascota(@RequestParam String nombre,
-                                 @RequestParam String especie,
-                                 @RequestParam(required = false) String raza,
-                                 @RequestParam(required = false) String fechaNacimiento,
-                                 @RequestParam(required = false) Double peso,
-                                 @RequestParam Long duenoId) {
+    public String guardarMascota(@AuthenticationPrincipal OAuth2User principal,
+            @RequestParam String nombre,
+            @RequestParam String especie,
+            @RequestParam(required = false) String raza,
+            @RequestParam(required = false) String fechaNacimiento,
+            @RequestParam(required = false) Double peso,
+            @RequestParam Long duenoId) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String email = principal.getAttribute("email");
+        if (!adminEmail.equals(email)) {
+            return "redirect:/dashboard";
+        }
 
         Dueno dueno = duenoRepository.findById(duenoId).orElse(null);
 
@@ -94,93 +97,184 @@ public class MascotaController {
         // Para otras especies, fotoUrl queda null
 
         mascotaRepository.save(mascota);
-        return "redirect:/mascotas";
+        return "redirect:/admin";
     }
 
     @GetMapping("/mascotas/{id}/eliminar")
-    public String eliminarMascota(@PathVariable Long id) {
+    public String eliminarMascota(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long id) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String email = principal.getAttribute("email");
+
+        Mascota mascota = mascotaRepository.findById(id).orElse(null);
+        if (mascota == null) {
+            // Mascota no encontrada, redirigir con error
+            return "redirect:/admin?error=MascotaNoEncontrada";
+        }
+        // Permitir eliminar si usuario es admin o dueño de la mascota
+        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+            // No autorizado para eliminar
+            return "redirect:/admin?error=NoAutorizado";
+        }
+
         mascotaRepository.deleteById(id);
-        return "redirect:/mascotas";
+        return "redirect:/admin";
     }
 
-    //Metodo para exportar mascotas a CSV
+    @GetMapping("/mascotas/{id}/editar")
+    public String mostrarFormularioEditarMascota(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long id,
+            Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String email = principal.getAttribute("email");
+
+        Mascota mascota = mascotaRepository.findById(id).orElse(null);
+        if (mascota == null) {
+            return "redirect:/admin?error=MascotaNoEncontrada";
+        }
+        // Permitir editar si usuario es admin o dueño
+        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+            return "redirect:/admin?error=NoAutorizado";
+        }
+
+        model.addAttribute("mascota", mascota);
+        model.addAttribute("duenos", duenoRepository.findAll());
+        User user = userRepository.findByEmail(email).orElse(null);
+        model.addAttribute("usuario", user);
+        return "mascota-form";
+    }
+
+    @PostMapping("/mascotas/{id}/editar")
+    public String actualizarMascota(@AuthenticationPrincipal OAuth2User principal,
+            @PathVariable Long id,
+            @RequestParam String nombre,
+            @RequestParam String especie,
+            @RequestParam(required = false) String raza,
+            @RequestParam(required = false) String fechaNacimiento,
+            @RequestParam(required = false) Double peso,
+            @RequestParam Long duenoId) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String email = principal.getAttribute("email");
+
+        Mascota mascota = mascotaRepository.findById(id).orElse(null);
+        if (mascota == null) {
+            return "redirect:/admin?error=MascotaNoEncontrada";
+        }
+        // Permitir actualizar si usuario es admin o dueño
+        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+            return "redirect:/admin?error=NoAutorizado";
+        }
+
+        Dueno dueno = duenoRepository.findById(duenoId).orElse(null);
+
+        // Actualizar campos
+        mascota.setNombre(nombre);
+        mascota.setEspecie(especie);
+        mascota.setRaza(raza);
+        mascota.setPeso(peso);
+        mascota.setDueno(dueno);
+
+        if (fechaNacimiento != null && !fechaNacimiento.isBlank()) {
+            mascota.setFechaNacimiento(LocalDate.parse(fechaNacimiento));
+        } else {
+            mascota.setFechaNacimiento(null);
+        }
+
+        // Actualizar imagen de Dog/Cat API basada en especie (opcional, puede omitirse
+        // si se quieren mantener fotos)
+        if ("PERRO".equalsIgnoreCase(especie)) {
+            mascota.setFotoUrl(dogCatApiService.obtenerImagenPerroAleatoria());
+        } else if ("GATO".equalsIgnoreCase(especie)) {
+            mascota.setFotoUrl(dogCatApiService.obtenerImagenGatoAleatoria());
+        } else {
+            mascota.setFotoUrl(null);
+        }
+
+        mascotaRepository.save(mascota);
+        return "redirect:/admin";
+    }
+
+    // Metodo para exportar mascotas a CSV
     @GetMapping(value = "/export/csv", produces = "text/csv")
-public void exportMascotasCSV(HttpServletResponse response) throws IOException {
+    public void exportMascotasCSV(HttpServletResponse response) throws IOException {
 
-    response.setContentType("text/csv");
-    response.setHeader("Content-Disposition", "attachment; filename=mascotas.csv");
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=mascotas.csv");
 
-    PrintWriter writer = response.getWriter();
+        PrintWriter writer = response.getWriter();
 
-    // Encabezado CSV
-    writer.println("id,nombre,especie,raza,fecha_nacimiento,peso,foto_url,dueno_id");
+        // Encabezado CSV
+        writer.println("id,nombre,especie,raza,fecha_nacimiento,peso,foto_url,dueno_id");
 
-    // Obtener mascotas de BD
-    List<Mascota> mascotas = mascotaRepository.findAll();
+        // Obtener mascotas de BD
+        List<Mascota> mascotas = mascotaRepository.findAll();
 
-    for (Mascota m : mascotas) {
-        writer.println(
-            m.getId() + "," +
-            m.getNombre() + "," +
-            m.getEspecie() + "," +
-            m.getRaza() + "," +
-            m.getFechaNacimiento() + "," +
-            m.getPeso() + "," +
-            m.getFotoUrl() + "," +
-            (m.getDueno() != null ? m.getDueno().getId() : "")
-        );
+        for (Mascota m : mascotas) {
+            writer.println(
+                    m.getId() + "," +
+                            m.getNombre() + "," +
+                            m.getEspecie() + "," +
+                            m.getRaza() + "," +
+                            m.getFechaNacimiento() + "," +
+                            m.getPeso() + "," +
+                            m.getFotoUrl() + "," +
+                            (m.getDueno() != null ? m.getDueno().getId() : ""));
+        }
+
+        writer.flush();
+        writer.close();
     }
 
-    writer.flush();
-    writer.close();
-    }
-
-    //Metodo para exportar mascotas a PDF
+    // Metodo para exportar mascotas a PDF
     @GetMapping(value = "/export/pdf", produces = "application/pdf")
     public void exportMascotasPDF(HttpServletResponse response) throws Exception {
 
-    response.setContentType("application/pdf");
-    response.setHeader("Content-Disposition", "attachment; filename=mascotas.pdf");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=mascotas.pdf");
 
-    Document document = new Document();
-    PdfWriter.getInstance(document, response.getOutputStream());
+        Document document = new Document();
+        PdfWriter.getInstance(document, response.getOutputStream());
 
-    document.open();
-    document.add(new Paragraph("Lista de Mascotas"));
-    document.add(new Paragraph(" "));
+        document.open();
+        document.add(new Paragraph("Lista de Mascotas"));
+        document.add(new Paragraph(" "));
 
-    List<Mascota> mascotas = mascotaRepository.findAll();
+        List<Mascota> mascotas = mascotaRepository.findAll();
 
-    // Crear tabla con 8 columnas
-    PdfPTable table = new PdfPTable(8);
-    table.setWidthPercentage(100);
+        // Crear tabla con 8 columnas
+        PdfPTable table = new PdfPTable(8);
+        table.setWidthPercentage(100);
 
-    // Encabezados
-    table.addCell("ID");
-    table.addCell("Nombre");
-    table.addCell("Especie");
-    table.addCell("Raza");
-    table.addCell("Nacimiento");
-    table.addCell("Peso");
-    table.addCell("Foto URL");
-    table.addCell("Dueño ID");
+        // Encabezados
+        table.addCell("ID");
+        table.addCell("Nombre");
+        table.addCell("Especie");
+        table.addCell("Raza");
+        table.addCell("Nacimiento");
+        table.addCell("Peso");
+        table.addCell("Foto URL");
+        table.addCell("Dueño ID");
 
-    // Filas
-    for (Mascota m : mascotas) {
-        table.addCell(String.valueOf(m.getId()));
-        table.addCell(m.getNombre());
-        table.addCell(m.getEspecie());
-        table.addCell(m.getRaza());
-        table.addCell(m.getFechaNacimiento() != null ? m.getFechaNacimiento().toString() : "");
-        table.addCell(m.getPeso() != null ? m.getPeso().toString() : "");
-        table.addCell(m.getFotoUrl() != null ? m.getFotoUrl() : "");
-        table.addCell(m.getDueno() != null ? String.valueOf(m.getDueno().getId()) : "");
-    }
+        // Filas
+        for (Mascota m : mascotas) {
+            table.addCell(String.valueOf(m.getId()));
+            table.addCell(m.getNombre());
+            table.addCell(m.getEspecie());
+            table.addCell(m.getRaza());
+            table.addCell(m.getFechaNacimiento() != null ? m.getFechaNacimiento().toString() : "");
+            table.addCell(m.getPeso() != null ? m.getPeso().toString() : "");
+            table.addCell(m.getFotoUrl() != null ? m.getFotoUrl() : "");
+            table.addCell(m.getDueno() != null ? String.valueOf(m.getDueno().getId()) : "");
+        }
 
-    // Añadir tabla al documento
-    document.add(table);
+        // Añadir tabla al documento
+        document.add(table);
 
-    document.close();
+        document.close();
     }
 
 }

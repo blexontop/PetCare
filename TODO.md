@@ -1,11 +1,7 @@
-/mascotas/nuevo y iniciar sesion cambiar a verde.
+Quitar iniciar sesión cuando se está iniciado
+
+Corregir eliminar a los animales añadidos desde sql, quizás sea por algo de los usuarios... aunque me deja añadirlos a otros usuarios y borrarlos...
 
 Funcionalidad del mail.
 
-Terminar de corregir el mapa.
-
-Mascotas solo en el dashboard.
-
 Editar perfil.
-
-Quitar datos inusados? o acceder a ellos? citas? veterinarios?

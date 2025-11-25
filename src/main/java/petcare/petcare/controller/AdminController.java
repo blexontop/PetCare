@@ -1,6 +1,7 @@
 package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -21,11 +22,14 @@ public class AdminController {
     private final CitaRepository citaRepository;
     private final VeterinarioRepository veterinarioRepository;
 
+    @Value("${APP_ADMIN_EMAIL}")
+    private String adminEmail;
+
     @GetMapping("/admin")
     public String panelAdmin(@AuthenticationPrincipal OAuth2User principal, Model model) {
         if (principal != null) {
             String email = principal.getAttribute("email");
-            if ("misaelbarreraojedagit@gmail.com".equals(email)) {
+            if (adminEmail.equals(email)) {
                 User user = userRepository.findByEmail(email).orElse(null);
                 model.addAttribute("usuario", user);
                 model.addAttribute("numUsuarios", userRepository.count());
@@ -33,6 +37,7 @@ public class AdminController {
                 model.addAttribute("numCitas", citaRepository.count());
                 model.addAttribute("numVeterinarios", veterinarioRepository.count());
                 model.addAttribute("mascotas", mascotaRepository.findAll());
+                model.addAttribute("adminEmail", adminEmail);
                 return "admin";
             }
         }
