@@ -1,5 +1,3 @@
-Quitar iniciar sesión cuando se está iniciado
-
 Corregir eliminar a los animales añadidos desde sql, quizás sea por algo de los usuarios... aunque me deja añadirlos a otros usuarios y borrarlos...
 
 Registro de auditoría de quién realiza cada acción
@@ -29,3 +27,4 @@ Mínimo 20 registros por tabla de la bd
 Comprobar si hay servicios para las funcionalidades avanzadas y uso de apis que se usarán en los controladores
 Quitar weatherapi (no usado)
 Qué los usuarios registrados puedan crear, ver sus propios registros y consultar datos públicos
+Quitar iniciar sesión cuando se está iniciado

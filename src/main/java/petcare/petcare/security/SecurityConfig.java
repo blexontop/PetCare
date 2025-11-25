@@ -18,44 +18,52 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
+        private final CustomUserDetailsService customUserDetailsService;
+        private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/**").permitAll() // Permitir acceso a admin, el controlador verifica el
-                                                                  // email
-                        .requestMatchers("/mascotas/**").authenticated() // Permitir acceso a mascotas para usuarios
-                                                                         // autenticados
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureForwardUrl("/login?error")
-                        .permitAll())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true))
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/"));
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .authorizeHttpRequests(authz -> authz
+                                                // Rutas públicas
+                                                .requestMatchers("/", "/login", "/register", "/guest-login", "/css/**",
+                                                                "/js/**",
+                                                                "/images/**", "/api/**", "/mapa")
+                                                .permitAll()
+                                                // Admin requiere verificación en el controlador
+                                                .requestMatchers("/admin/**").permitAll()
+                                                // Mascotas requieren autenticación
+                                                .requestMatchers("/mascotas/**").authenticated()
+                                                // Dashboard requiere autenticación
+                                                .requestMatchers("/dashboard").authenticated()
+                                                // Todo lo demás es público
+                                                .anyRequest().permitAll())
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .failureUrl("/login?error=true")
+                                                .successHandler(customAuthenticationSuccessHandler)
+                                                .permitAll())
+                                .oauth2Login(oauth2 -> oauth2
+                                                .loginPage("/login")
+                                                .successHandler(customAuthenticationSuccessHandler))
+                                .logout(logout -> logout
+                                                .logoutSuccessUrl("/"));
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+                return authConfig.getAuthenticationManager();
+        }
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth.userDetailsService(customUserDetailsService)
+                                .passwordEncoder(passwordEncoder());
+        }
 }

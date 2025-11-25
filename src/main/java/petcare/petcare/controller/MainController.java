@@ -26,6 +26,7 @@ import petcare.petcare.service.EmailService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,14 +42,39 @@ public class MainController {
     private String adminEmail;
 
     @GetMapping("/")
-    public String home(@AuthenticationPrincipal OAuth2User principal, Model model) {
+    public String home(Authentication authentication, HttpSession session, Model model) {
         User user = null;
-        if (principal != null) {
-            String email = principal.getAttribute("email");
-            if (email != null) {
-                user = userRepository.findByEmail(email).orElse(null);
+        boolean isGuest = session.getAttribute("isGuest") != null && (boolean) session.getAttribute("isGuest");
+
+        // If authenticated, prefer authenticated user and clear guest flag
+        if (authentication != null && authentication.isAuthenticated()) {
+            // remove guest flag if present
+            if (isGuest) {
+                session.removeAttribute("isGuest");
+                isGuest = false;
             }
+
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof OAuth2User oauth2User) {
+                String email = oauth2User.getAttribute("email");
+                if (email != null) {
+                    user = userRepository.findByEmail(email).orElse(null);
+                }
+            } else if (principal instanceof UserDetails userDetails) {
+                String email = userDetails.getUsername();
+                if (email != null) {
+                    user = userRepository.findByEmail(email).orElse(null);
+                }
+            }
+
+            model.addAttribute("isGuest", false);
+        } else if (isGuest) {
+            model.addAttribute("isGuest", true);
+            model.addAttribute("usuarioNombre", "Invitado");
+        } else {
+            model.addAttribute("isGuest", false);
         }
+
         model.addAttribute("usuario", user);
         return "home";
     }
@@ -59,6 +85,12 @@ public class MainController {
             model.addAttribute("loginError", true);
         }
         return "login";
+    }
+
+    @GetMapping("/guest-login")
+    public String guestLogin(HttpSession session) {
+        session.setAttribute("isGuest", true);
+        return "redirect:/mapa";
     }
 
     @GetMapping("/register")
@@ -108,9 +140,8 @@ public class MainController {
         List<Mascota> mascotas = List.of();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            // If not authenticated, show login page instead of redirect to login so users
-            // aren't sent away unexpectedly
-            return "login";
+            // If not authenticated, redirect to login
+            return "redirect:/login";
         }
 
         Object principal = authentication.getPrincipal();
@@ -254,16 +285,44 @@ public class MainController {
     }
 
     @GetMapping("/mapa")
-    public String mapa(@AuthenticationPrincipal OAuth2User principal, Model model) {
+    public String mapa(Authentication authentication, HttpSession session, Model model) {
         User user = null;
-        if (principal != null) {
-            String email = principal.getAttribute("email");
-            if (email != null) {
-                user = userRepository.findByEmail(email).orElse(null);
+        boolean isGuest = session.getAttribute("isGuest") != null && (boolean) session.getAttribute("isGuest");
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated();
+
+        // Si está autenticado, priorizar la autenticación y limpiar el flag de invitado
+        if (isAuthenticated) {
+            if (isGuest) {
+                session.removeAttribute("isGuest");
+                isGuest = false;
             }
+
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof OAuth2User oauth2User) {
+                String email = oauth2User.getAttribute("email");
+                if (email != null) {
+                    user = userRepository.findByEmail(email).orElse(null);
+                }
+            } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+                String email = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+                if (email != null) {
+                    user = userRepository.findByEmail(email).orElse(null);
+                }
+            }
+
+            model.addAttribute("isGuest", false);
+            model.addAttribute("usuario", user);
+            return "mapa";
         }
-        model.addAttribute("usuario", user);
-        return "mapa";
+
+        // Si no autenticado, permitir acceso solo si es invitado
+        if (isGuest) {
+            model.addAttribute("isGuest", true);
+            model.addAttribute("usuarioNombre", "Invitado");
+            return "mapa";
+        }
+
+        return "redirect:/login";
     }
 
 }
