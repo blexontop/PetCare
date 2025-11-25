@@ -2,6 +2,9 @@ package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -9,12 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import petcare.petcare.model.Mascota;
-import petcare.petcare.model.User;
-import petcare.petcare.repository.CitaRepository;
-import petcare.petcare.repository.MascotaRepository;
-import petcare.petcare.repository.VeterinarioRepository;
-import petcare.petcare.repository.UserRepository;
+import petcare.petcare.model.*;
+import petcare.petcare.repository.*;
+
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -25,14 +26,16 @@ public class AdminController {
     private final MascotaRepository mascotaRepository;
     private final CitaRepository citaRepository;
     private final VeterinarioRepository veterinarioRepository;
+    private final DuenoRepository duenoRepository;
 
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
 
     @GetMapping("/admin")
     public String panelAdmin(@AuthenticationPrincipal OAuth2User principal,
-            @RequestParam(required = false) String especie,
-            Model model) {
+                             @RequestParam(required = false) String especie,
+                             @RequestParam(defaultValue = "mascotas") String tab,
+                             Model model, @PageableDefault(size = 10) Pageable pageable) {
         if (principal != null) {
             String email = principal.getAttribute("email");
             if (adminEmail.equals(email)) {
@@ -43,32 +46,38 @@ public class AdminController {
                 model.addAttribute("numCitas", citaRepository.count());
                 model.addAttribute("numVeterinarios", veterinarioRepository.count());
 
-                // Filtrado por especie
-                List<Mascota> mascotas;
+                // Paginación para todas las entidades
+                Page<Mascota> mascotas;
                 if (especie != null && !especie.isEmpty()) {
                     if ("OTRO".equals(especie)) {
-                        // Obtener todos excepto PERRO y GATO
-                        mascotas = mascotaRepository.findAll().stream()
-                                .filter(m -> !m.getEspecie().equalsIgnoreCase("PERRO") &&
-                                        !m.getEspecie().equalsIgnoreCase("GATO"))
-                                .toList();
+                        mascotas = mascotaRepository.findByEspecieNotIn(Arrays.asList("PERRO", "GATO"), pageable);
                     } else {
-                        mascotas = mascotaRepository.findByEspecieIgnoreCase(especie);
+                        mascotas = mascotaRepository.findByEspecieIgnoreCase(especie, pageable);
                     }
                     model.addAttribute("especieFiltro", especie);
                 } else {
-                    mascotas = mascotaRepository.findAll();
+                    mascotas = mascotaRepository.findAll(pageable);
                 }
                 model.addAttribute("mascotas", mascotas);
-                model.addAttribute("adminEmail", adminEmail);
 
-                // Lista de especies disponibles
+                Page<Veterinario> veterinarios = veterinarioRepository.findAll(pageable);
+                Page<User> usuarios = userRepository.findAll(pageable);
+                Page<Dueno> duenos = duenoRepository.findAll(pageable);
+                Page<Cita> citas = citaRepository.findAll(pageable);
+
+                model.addAttribute("veterinarios", veterinarios);
+                model.addAttribute("usuarios", usuarios);
+                model.addAttribute("duenos", duenos);
+                model.addAttribute("citas", citas);
+                model.addAttribute("adminEmail", adminEmail);
                 model.addAttribute("especies", List.of("PERRO", "GATO", "OTRO"));
+                model.addAttribute("currentTab", tab);
+
 
                 return "admin";
             }
         }
-        return "redirect:/dashboard"; // or "access-denied"
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/admin/mascota/{id}")

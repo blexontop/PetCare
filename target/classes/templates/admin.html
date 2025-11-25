@@ -53,88 +53,252 @@
     </div>
 
     <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="m-0">Listado de Mascotas</h1>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${currentTab == 'mascotas'} ? 'active'" th:href="@{/admin(tab='mascotas')}">Mascotas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${currentTab == 'veterinarios'} ? 'active'" th:href="@{/admin(tab='veterinarios')}">Veterinarios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${currentTab == 'usuarios'} ? 'active'" th:href="@{/admin(tab='usuarios')}">Usuarios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${currentTab == 'duenos'} ? 'active'" th:href="@{/admin(tab='duenos')}">Dueños</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${currentTab == 'citas'} ? 'active'" th:href="@{/admin(tab='citas')}">Citas</a>
+            </li>
+        </ul>
 
-            <div class="d-flex gap-2">
-                <a href="/admin/mascotas/export/csv" class="btn btn-outline-primary">Exportar (CSV)</a>
-                <a href="/admin/mascotas/export/pdf" class="btn btn-outline-danger">Exportar (PDF)</a>
-                <a class="btn btn-success" href="/mascotas/nueva">Añadir mascota</a>
-            </div>
-
-        </div>
-
-        <!-- Filtrado avanzado por tipo de animal -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Búsqueda y Filtrado Avanzado</h5>
-                <form method="get" th:action="@{/admin}" class="row g-3">
-                    <div class="col-md-6">
-                        <label for="especieFilter" class="form-label">Filtrar por tipo de animal:</label>
-                        <select class="form-select" id="especieFilter" name="especie">
-                            <option value="">-- Todos los tipos --</option>
-                            <option th:each="esp : ${especies}" th:value="${esp}" th:text="${esp}"
-                                th:selected="${especieFiltro == esp}"></option>
-                        </select>
+        <div class="tab-content mt-3">
+            <div class="tab-pane fade" th:classappend="${currentTab == 'mascotas'} ? 'show active'" id="mascotas-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1 class="m-0">Listado de Mascotas</h1>
+                    <div class="d-flex gap-2">
+                        <a href="/admin/mascotas/export/csv" class="btn btn-outline-primary">Exportar (CSV)</a>
+                        <a href="/admin/mascotas/export/pdf" class="btn btn-outline-danger">Exportar (PDF)</a>
+                        <a class="btn btn-success" href="/mascotas/nueva">Añadir mascota</a>
                     </div>
-                    <div class="col-md-6 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i>Filtrar
-                        </button>
-                        <a th:href="@{/admin}" class="btn btn-secondary">
-                            <i class="fas fa-redo me-1"></i>Limpiar filtro
-                        </a>
+                </div>
+                <!-- Filtrado avanzado por tipo de animal -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Búsqueda y Filtrado Avanzado</h5>
+                        <form method="get" th:action="@{/admin}" class="row g-3">
+                             <input type="hidden" name="tab" value="mascotas">
+                            <div class="col-md-6">
+                                <label for="especieFilter" class="form-label">Filtrar por tipo de animal:</label>
+                                <select class="form-select" id="especieFilter" name="especie">
+                                    <option value="">-- Todos los tipos --</option>
+                                    <option th:each="esp : ${especies}" th:value="${esp}" th:text="${esp}"
+                                        th:selected="${especieFiltro == esp}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>Filtrar
+                                </button>
+                                <a th:href="@{/admin(tab='mascotas')}" class="btn btn-secondary">
+                                    <i class="fas fa-redo me-1"></i>Limpiar filtro
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Peso</th>
+                            <th>Foto</th>
+                            <th>Dueño</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${mascotas.content}">
+                            <td th:text="${m.id}"></td>
+                            <td th:text="${m.nombre}"></td>
+                            <td th:text="${m.especie}"></td>
+                            <td th:text="${m.peso != null ? m.peso + ' kg' : 'N/A'}"></td>
+                            <td>
+                                <img th:if="${m.fotoUrl != null}" th:src="@{${m.fotoUrl}}" alt="Foto de mascota"
+                                    style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                                <span th:if="${m.fotoUrl == null}">Sin foto</span>
+                            </td>
+                            <td th:text="${m.dueno != null ? m.dueno.nombre : 'Sin dueño'}"></td>
+                            <td>
+                                <a th:href="@{'/admin/mascota/' + ${m.id}}" class="btn btn-sm btn-info me-1">
+                                    <i class="fas fa-eye me-1"></i>Ver detalles
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Paginación para Mascotas -->
+                <nav th:if="${mascotas.totalPages > 1}">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${mascotas.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${mascotas.number - 1}, size=${mascotas.size}, especie=${especieFiltro})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, mascotas.totalPages - 1)}" th:classappend="${i == mascotas.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${i}, size=${mascotas.size}, especie=${especieFiltro})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${mascotas.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${mascotas.number + 1}, size=${mascotas.size}, especie=${especieFiltro})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="tab-pane fade" th:classappend="${currentTab == 'veterinarios'} ? 'show active'" id="veterinarios-tab">
+                 <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Especialidad</th>
+                             <th>Email</th>
+                            <th>Dirección</th>
+                            <th>Ciudad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${veterinarios.content}">
+                            <td th:text="${v.id}"></td>
+                            <td th:text="${v.nombre}"></td>
+                            <td th:text="${v.especialidad}"></td>
+                            <td th:text="${v.email}"></td>
+                            <td th:text="${v.direccion}"></td>
+                            <td th:text="${v.ciudad}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Paginación para Veterinarios -->
+                <nav th:if="${veterinarios.totalPages > 1}">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${veterinarios.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${veterinarios.number - 1}, size=${veterinarios.size})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, veterinarios.totalPages - 1)}" th:classappend="${i == veterinarios.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${i}, size=${veterinarios.size})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${veterinarios.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${veterinarios.number + 1}, size=${veterinarios.size})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="tab-pane fade" th:classappend="${currentTab == 'usuarios'} ? 'show active'" id="usuarios-tab">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Provider</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${usuarios.content}">
+                            <td th:text="${u.id}"></td>
+                            <td th:text="${u.name}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.provider}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <nav th:if="${usuarios.totalPages > 1}">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${usuarios.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${usuarios.number - 1}, size=${usuarios.size})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, usuarios.totalPages - 1)}" th:classappend="${i == usuarios.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${i}, size=${usuarios.size})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${usuarios.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${usuarios.number + 1}, size=${usuarios.size})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="tab-pane fade" th:classappend="${currentTab == 'duenos'} ? 'show active'" id="duenos-tab">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Ciudad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${duenos.content}">
+                            <td th:text="${d.id}"></td>
+                            <td th:text="${d.nombre}"></td>
+                            <td th:text="${d.email}"></td>
+                            <td th:text="${d.telefono}"></td>
+                            <td th:text="${d.direccion}"></td>
+                            <td th:text="${d.ciudad}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <nav th:if="${duenos.totalPages > 1}">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${duenos.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${duenos.number - 1}, size=${duenos.size})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, duenos.totalPages - 1)}" th:classappend="${i == duenos.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${i}, size=${duenos.size})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${duenos.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${duenos.number + 1}, size=${duenos.size})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="tab-pane fade" th:classappend="${currentTab == 'citas'} ? 'show active'" id="citas-tab">
+                <table class="table table-striped">
+                     <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                             <th>Estado</th>
+                            <th>Mascota</th>
+                            <th>Dueño</th>
+                             <th>Veterinario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${citas.content}">
+                            <td th:text="${c.id}"></td>
+                            <td th:text="${#temporals.format(c.fechaHora, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${c.estado}"></td>
+                            <td th:text="${c.mascota.nombre}"></td>
+                            <td th:text="${c.mascota.dueno != null ? c.mascota.dueno.nombre : 'Sin dueño'}"></td>
+                            <td th:text="${c.veterinario.nombre}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <nav th:if="${citas.totalPages > 1}">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${citas.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='citas', page=${citas.number - 1}, size=${citas.size})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, citas.totalPages - 1)}" th:classappend="${i == citas.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='citas', page=${i}, size=${citas.size})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${citas.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin(tab='citas', page=${citas.number + 1}, size=${citas.size})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-
-        <!-- Información del filtro aplicado -->
-        <div th:if="${especieFiltro != null and especieFiltro != ''}"
-            class="alert alert-info alert-dismissible fade show mb-3">
-            <strong>Filtro activo:</strong> Mostrando <span th:text="${mascotas.size()}">0</span> animal(es) de tipo
-            <strong th:text="${especieFiltro}">especie</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Especie</th>
-                    <th>Peso</th>
-                    <th>Foto</th>
-                    <th>Dueño</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="m : ${mascotas}">
-                    <td th:text="${m.id}"></td>
-                    <td th:text="${m.nombre}"></td>
-                    <td th:text="${m.especie}"></td>
-                    <td th:text="${m.peso != null ? m.peso + ' kg' : 'N/A'}"></td>
-                    <td>
-                        <img th:if="${m.fotoUrl != null}" th:src="@{${m.fotoUrl}}" alt="Foto de mascota"
-                            style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
-                        <span th:if="${m.fotoUrl == null}">Sin foto</span>
-                    </td>
-                    <td th:text="${m.dueno != null ? m.dueno.nombre : 'Sin dueño'}"></td>
-                    <td>
-                        <a th:href="@{'/admin/mascota/' + ${m.id}}" class="btn btn-sm btn-info me-1">
-                            <i class="fas fa-eye me-1"></i>Ver detalles
-                        </a>
-                        <a th:if="${usuario != null and (usuario.email == adminEmail or (m.dueno != null and usuario.email == m.dueno.email))}"
-                            th:href="@{'/mascotas/' + ${m.id} + '/editar'}"
-                            class="btn btn-sm btn-primary me-1">Editar</a>
-                        <a th:if="${usuario != null and (usuario.email == adminEmail or (m.dueno != null and usuario.email == m.dueno.email))}"
-                            th:href="@{'/mascotas/' + ${m.id} + '/eliminar'}" class="btn btn-sm btn-danger"
-                            onclick="return confirm('¿Estás seguro de eliminar esta mascota?');">Eliminar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 
     <div th:replace="fragments/footer :: footer"></div>

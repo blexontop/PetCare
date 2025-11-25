@@ -8,7 +8,7 @@ Exportación avanzada (con variables de filtros)
 
 En el Dashboard, resumen de actividad reciente y permitir modificar datos de usuario y foto
 
-Añadir paginación en listados, y vistas de otros datos de la bd, con un selector por tabs por ejemplo, en el de admin. y que en el de cada usuario pueda ver sus citas también
+añadir vistas de otros datos de la bd, con un selector por tabs por ejemplo, en el de admin. y que en el de cada usuario pueda ver sus citas también
 
 Caché de datos frecuentes (subir nota)
 
@@ -27,3 +27,4 @@ Poner botón de acceder como invitado en el login, y dejar ver el mapa
 Búsqueda y filtrado avanzado en panel de admin.
 Vista mascota
 Exportación simple
+Añadir paginación en listados
