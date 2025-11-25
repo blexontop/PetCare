@@ -6,8 +6,6 @@ Gráficos visuales de datos con chart.js o similar en el panel de administrador
 
 Exportación avanzada (con variables de filtros)
 
-
-
 En el Dashboard, resumen de actividad reciente y permitir modificar datos de usuario y foto
 
 Añadir paginación en listados, y vistas de otros datos de la bd, con un selector por tabs por ejemplo, en el de admin. y que en el de cada usuario pueda ver sus citas también
@@ -26,3 +24,6 @@ Qué los usuarios registrados puedan crear, ver sus propios registros y consulta
 Quitar iniciar sesión cuando se está iniciado
 Poder borrar cualquier mascota, tenga citas asociadas o no
 Poner botón de acceder como invitado en el login, y dejar ver el mapa
+Búsqueda y filtrado avanzado en panel de admin.
+Vista mascota
+Exportación simple

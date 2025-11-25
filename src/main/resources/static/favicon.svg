@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fondo redondeado verde -->
+  <rect width="100" height="100" fill="#438a56" rx="15"/>
+  
+  <!-- Almohadilla central (grande) -->
+  <ellipse cx="50" cy="65" rx="14" ry="16" fill="#ffffff"/>
+  
+  <!-- Almohadillas de los dedos - FILA CURVA SUPERIOR -->
+  <!-- Dedo izquierdo exterior -->
+  <ellipse cx="28" cy="38" rx="8" ry="11" fill="#ffffff"/>
+  
+  <!-- Dedo izquierdo interior -->
+  <ellipse cx="43" cy="32" rx="7" ry="10" fill="#ffffff"/>
+  
+  <!-- Dedo derecho interior -->
+  <ellipse cx="57" cy="32" rx="7" ry="10" fill="#ffffff"/>
+  
+  <!-- Dedo derecho exterior -->
+  <ellipse cx="72" cy="38" rx="8" ry="11" fill="#ffffff"/>
+</svg>
