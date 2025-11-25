@@ -90,9 +90,23 @@
 
                             <div class="mb-4">
                                 <h4 class="mb-3">Iniciar Sesión</h4>
-                                <p class="text-muted">Accede a tu cuenta usando Google o GitHub para gestionar tus
-                                    mascotas</p>
+                                <p class="text-muted">Accede a tu cuenta usando Google, GitHub o correo y contraseña
+                                    para gestionar tus mascotas</p>
                             </div>
+
+                            <form th:action="@{/login}" method="post" class="mb-3">
+                                <div class="mb-3 text-start">
+                                    <label for="username" class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control" id="username" name="username"
+                                        placeholder="ejemplo@correo.com" required autofocus>
+                                </div>
+                                <div class="mb-3 text-start">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Contraseña" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100 mb-3">Iniciar sesión</button>
+                            </form>
 
                             <div class="d-grid gap-3">
                                 <a class="google-btn w-100 justify-content-center" href="/oauth2/authorization/google">
@@ -119,7 +133,7 @@
                             <div class="mt-4 pt-3 border-top">
                                 <small class="text-muted">
                                     Al iniciar sesión, aceptas nuestros <a
-                                        href="https://imagenes.elpais.com/resizer/v2/GLK77QHJ4JAY3KAFM5FV6YV5OM.webp?auth=09c184fe292b2932d6e90d1e57fd1dc21e111cc2044559c1cc5f7e5e04ae249d&width=1200">términos
+                                        href="https://imagenes.elpais.com/resizer/v2/GLK77QHJ4JAY3KAFM5FV6YV5OM.webp?auth=09c184fe292b2932d6e90d1e57fd1dc21e111cc2044559c1cc2044559c1cc5f7e5e04ae249d&width=1200">términos
                                         de servicio</a> y <a
                                         href="https://i.pinimg.com/236x/7c/40/3d/7c403dfad2d0725d88059c56e0f3681f.jpg">Política
                                         de privacidad</a>.

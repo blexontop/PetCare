@@ -10,6 +10,7 @@ CREATE TABLE users (
   id BIGINT NOT NULL AUTO_INCREMENT,
   created_at DATETIME(6) DEFAULT NULL,
   email VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
   google_id VARCHAR(255) DEFAULT NULL,
   name VARCHAR(255) NOT NULL,
   picture VARCHAR(255) DEFAULT NULL,
@@ -19,11 +20,6 @@ CREATE TABLE users (
   UNIQUE KEY UK_users_email (email),
   UNIQUE KEY UK_users_google (google_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-INSERT INTO users (email, google_id, name, picture, provider, created_at, updated_at) VALUES
-('admin@petcare.com', 'google-admin-001', 'Admin Petcare', NULL, 'GOOGLE', NOW(), NOW()),
-('user1@petcare.com', 'google-user-001', 'Usuario Uno', NULL, 'GOOGLE', NOW(), NOW()),
-('user2@petcare.com', 'google-user-002', 'Usuario Dos', NULL, 'GOOGLE', NOW(), NOW());
 
 -- Tablas de dominio: dueno, veterinario, mascota, cita
 DROP TABLE IF EXISTS cita;

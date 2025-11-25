@@ -31,4 +31,7 @@ public class Dueno {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Mascota> mascotas;
+
+    @Transient
+    private String password;
 }
