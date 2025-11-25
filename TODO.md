@@ -6,7 +6,7 @@ Gráficos visuales de datos con chart.js o similar en el panel de administrador
 
 Exportación avanzada (con variables de filtros)
 
-Búsqueda y filtrado avanzado
+
 
 En el Dashboard, resumen de actividad reciente y permitir modificar datos de usuario y foto
 
