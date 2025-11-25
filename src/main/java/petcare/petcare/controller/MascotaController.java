@@ -23,9 +23,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import petcare.petcare.model.Dueno;
 import petcare.petcare.model.Mascota;
 import petcare.petcare.model.User;
+import petcare.petcare.model.Cita;
 import petcare.petcare.repository.DuenoRepository;
 import petcare.petcare.repository.MascotaRepository;
 import petcare.petcare.repository.UserRepository;
+import petcare.petcare.repository.CitaRepository;
 import petcare.petcare.service.DogCatApiService;
 
 import java.io.IOException;
@@ -38,9 +40,10 @@ import java.util.List;
 public class MascotaController {
 
     private final MascotaRepository mascotaRepository;
-    private final DuenoRepository duenoRepository;
-    private final DogCatApiService dogCatApiService;
     private final UserRepository userRepository;
+    private final CitaRepository citaRepository;
+    private final DogCatApiService dogCatApiService;
+    private final DuenoRepository duenoRepository;
 
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
@@ -185,6 +188,11 @@ public class MascotaController {
             return "redirect:/admin?error=NoAutorizado";
         }
 
+        // Delete all associated citas first to avoid foreign key constraint violation
+        List<Cita> citasAsociadas = citaRepository.findByMascota(mascota);
+        for (Cita cita : citasAsociadas) {
+            citaRepository.deleteById(cita.getId());
+        }
         mascotaRepository.deleteById(id);
         return "redirect:/admin";
     }
