@@ -9,6 +9,12 @@ import petcare.petcare.repository.MascotaRepository;
 
 import java.util.List;
 
+/**
+ * Controlador REST para gestionar las operaciones relacionadas con las
+ * Mascotas.
+ * Proporciona el endpoint para listar todas las mascotas.
+ */
+
 @RestController
 @RequestMapping("/api/mascotas")
 @RequiredArgsConstructor

@@ -1,3 +1,11 @@
+<!--
+Este archivo HTML construye el panel de administración de "Petcare".
+Es una página compleja que incluye:
+- Un resumen visual con tarjetas y un gráfico de Chart.js.
+- Un sistema de pestañas (tabs) para navegar entre diferentes entidades (mascotas, veterinarios, etc.).
+- Tablas de datos con paginación y funcionalidades de filtrado y exportación.
+- Lógica de Thymeleaf para renderizar dinámicamente todo el contenido.
+-->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
@@ -5,6 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Petcare</title>
+    <!-- Enlaces a CSS, favicon y la librería Chart.js para los gráficos -->
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,100 +22,113 @@
 </head>
 
 <body>
+    <!-- Inclusión del fragmento del header -->
     <div th:replace="fragments/header :: navbar"></div>
 
-<div class="container">
-    <h1>Panel de administración</h1>
-    
-    <div class="row mt-4">
-        
-        <div class="col-md-6">
-            <div class="row">
-                
-                <div class="col-6 mb-3">
-                    <div class="card text-bg-primary">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-users me-2"></i>Usuarios</h5>
-                            <p class="card-text fs-3" th:text="${numUsuarios}">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 mb-3">
-                    <div class="card text-bg-success">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-dog me-2"></i>Mascotas</h5>
-                            <p class="card-text fs-3" th:text="${numMascotas}">0</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-6 mb-3">
-                    <div class="card text-bg-warning">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-calendar-check me-2"></i>Citas</h5>
-                            <p class="card-text fs-3" th:text="${numCitas}">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 mb-3">
-                    <div class="card" style="background-color: #438a56; color: white;">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-user-md me-2"></i>Veterinarios</h5>
-                            <p class="card-text fs-3" th:text="${numVeterinarios}">0</p>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
+    <div class="container">
+        <h1>Panel de administración</h1>
 
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100"> <div class="card-header bg-light">
-                    <h4 class="mb-0">📊 Resumen Total de Entidades</h4>
+        <!-- Sección de Resumen: Tarjetas y Gráfico -->
+        <div class="row mt-4">
+            <!-- Tarjetas con contadores de entidades -->
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="card text-bg-primary">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-users me-2"></i>Usuarios</h5>
+                                <p class="card-text fs-3" th:text="${numUsuarios}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="card text-bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-dog me-2"></i>Mascotas</h5>
+                                <p class="card-text fs-3" th:text="${numMascotas}">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <div class="card text-bg-warning">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-calendar-check me-2"></i>Citas</h5>
+                                <p class="card-text fs-3" th:text="${numCitas}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="card" style="background-color: #438a56; color: white;">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-user-md me-2"></i>Veterinarios</h5>
+                                <p class="card-text fs-3" th:text="${numVeterinarios}">0</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <canvas id="totalesChart"></canvas>
+            </div>
+
+            <!-- Gráfico de barras de Chart.js -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">📊 Resumen Total de Entidades</h4>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <canvas id="totalesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    </div>
-    
+
+    <!-- Sistema de Pestañas para la Gestión de Datos -->
     <div class="container mt-5">
+        <!-- Navegación por pestañas. La clase 'active' se aplica dinámicamente según el parámetro 'currentTab' -->
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${currentTab == 'mascotas'} ? 'active'" th:href="@{/admin(tab='mascotas')}">Mascotas</a>
+                <a class="nav-link" th:classappend="${currentTab == 'mascotas'} ? 'active'"
+                    th:href="@{/admin(tab='mascotas')}">Mascotas</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${currentTab == 'veterinarios'} ? 'active'" th:href="@{/admin(tab='veterinarios')}">Veterinarios</a>
+                <a class="nav-link" th:classappend="${currentTab == 'veterinarios'} ? 'active'"
+                    th:href="@{/admin(tab='veterinarios')}">Veterinarios</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${currentTab == 'usuarios'} ? 'active'" th:href="@{/admin(tab='usuarios')}">Usuarios</a>
+                <a class="nav-link" th:classappend="${currentTab == 'usuarios'} ? 'active'"
+                    th:href="@{/admin(tab='usuarios')}">Usuarios</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${currentTab == 'duenos'} ? 'active'" th:href="@{/admin(tab='duenos')}">Dueños</a>
+                <a class="nav-link" th:classappend="${currentTab == 'duenos'} ? 'active'"
+                    th:href="@{/admin(tab='duenos')}">Dueños</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${currentTab == 'citas'} ? 'active'" th:href="@{/admin(tab='citas')}">Citas</a>
+                <a class="nav-link" th:classappend="${currentTab == 'citas'} ? 'active'"
+                    th:href="@{/admin(tab='citas')}">Citas</a>
             </li>
         </ul>
 
+        <!-- Contenido de las pestañas -->
         <div class="tab-content mt-3">
+            <!-- Pestaña de Mascotas -->
             <div class="tab-pane fade" th:classappend="${currentTab == 'mascotas'} ? 'show active'" id="mascotas-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h1 class="m-0">Listado de Mascotas</h1>
+                    <!-- Botones de acción: Exportar y Añadir -->
                     <div class="d-flex gap-2">
                         <a href="/admin/mascotas/export/csv" class="btn btn-outline-primary">Exportar (CSV)</a>
                         <a href="/admin/mascotas/export/pdf" class="btn btn-outline-danger">Exportar (PDF)</a>
                         <a class="btn btn-success" href="/mascotas/nueva">Añadir mascota</a>
                     </div>
                 </div>
+                <!-- Formulario de búsqueda y filtrado -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">Búsqueda y Filtrado Avanzado</h5>
                         <form method="get" th:action="@{/admin}" class="row g-3">
-                             <input type="hidden" name="tab" value="mascotas">
+                            <input type="hidden" name="tab" value="mascotas">
                             <div class="col-md-6">
                                 <label for="especieFilter" class="form-label">Filtrar por tipo de animal:</label>
                                 <select class="form-select" id="especieFilter" name="especie">
@@ -126,6 +148,7 @@
                         </form>
                     </div>
                 </div>
+                <!-- Tabla de mascotas con datos paginados -->
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -139,6 +162,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Itera sobre el contenido de la página actual de mascotas -->
                         <tr th:each="m : ${mascotas.content}">
                             <td th:text="${m.id}"></td>
                             <td th:text="${m.nombre}"></td>
@@ -165,22 +189,29 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- Controles de paginación, visibles solo si hay más de una página -->
                 <nav th:if="${mascotas.totalPages > 1}">
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${mascotas.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${mascotas.number - 1}, size=${mascotas.size}, especie=${especieFiltro})}">Anterior</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='mascotas', page=${mascotas.number - 1}, size=${mascotas.size}, especie=${especieFiltro})}">Anterior</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, mascotas.totalPages - 1)}" th:classappend="${i == mascotas.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${i}, size=${mascotas.size}, especie=${especieFiltro})}" th:text="${i + 1}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, mascotas.totalPages - 1)}"
+                            th:classappend="${i == mascotas.number} ? 'active'">
+                            <a class="page-link"
+                                th:href="@{/admin(tab='mascotas', page=${i}, size=${mascotas.size}, especie=${especieFiltro})}"
+                                th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${mascotas.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='mascotas', page=${mascotas.number + 1}, size=${mascotas.size}, especie=${especieFiltro})}">Siguiente</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='mascotas', page=${mascotas.number + 1}, size=${mascotas.size}, especie=${especieFiltro})}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
             </div>
-            <div class="tab-pane fade" th:classappend="${currentTab == 'veterinarios'} ? 'show active'" id="veterinarios-tab">
-                 <table class="table table-striped">
+            <div class="tab-pane fade" th:classappend="${currentTab == 'veterinarios'} ? 'show active'"
+                id="veterinarios-tab">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -205,13 +236,18 @@
                 <nav th:if="${veterinarios.totalPages > 1}">
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${veterinarios.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${veterinarios.number - 1}, size=${veterinarios.size})}">Anterior</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='veterinarios', page=${veterinarios.number - 1}, size=${veterinarios.size})}">Anterior</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, veterinarios.totalPages - 1)}" th:classappend="${i == veterinarios.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${i}, size=${veterinarios.size})}" th:text="${i + 1}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, veterinarios.totalPages - 1)}"
+                            th:classappend="${i == veterinarios.number} ? 'active'">
+                            <a class="page-link"
+                                th:href="@{/admin(tab='veterinarios', page=${i}, size=${veterinarios.size})}"
+                                th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${veterinarios.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='veterinarios', page=${veterinarios.number + 1}, size=${veterinarios.size})}">Siguiente</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='veterinarios', page=${veterinarios.number + 1}, size=${veterinarios.size})}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
@@ -238,13 +274,17 @@
                 <nav th:if="${usuarios.totalPages > 1}">
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${usuarios.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${usuarios.number - 1}, size=${usuarios.size})}">Anterior</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='usuarios', page=${usuarios.number - 1}, size=${usuarios.size})}">Anterior</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, usuarios.totalPages - 1)}" th:classappend="${i == usuarios.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${i}, size=${usuarios.size})}" th:text="${i + 1}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, usuarios.totalPages - 1)}"
+                            th:classappend="${i == usuarios.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${i}, size=${usuarios.size})}"
+                                th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${usuarios.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='usuarios', page=${usuarios.number + 1}, size=${usuarios.size})}">Siguiente</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='usuarios', page=${usuarios.number + 1}, size=${usuarios.size})}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
@@ -275,19 +315,23 @@
                 <nav th:if="${duenos.totalPages > 1}">
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${duenos.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${duenos.number - 1}, size=${duenos.size})}">Anterior</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='duenos', page=${duenos.number - 1}, size=${duenos.size})}">Anterior</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, duenos.totalPages - 1)}" th:classappend="${i == duenos.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${i}, size=${duenos.size})}" th:text="${i + 1}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, duenos.totalPages - 1)}"
+                            th:classappend="${i == duenos.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${i}, size=${duenos.size})}"
+                                th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${duenos.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='duenos', page=${duenos.number + 1}, size=${duenos.size})}">Siguiente</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='duenos', page=${duenos.number + 1}, size=${duenos.size})}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
             </div>
             <div class="tab-pane fade" th:classappend="${currentTab == 'citas'} ? 'show active'" id="citas-tab">
-                 <table class="table table-striped">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -312,13 +356,17 @@
                 <nav th:if="${citas.totalPages > 1}">
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${citas.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='citas', page=${citas.number - 1}, size=${citas.size})}">Anterior</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='citas', page=${citas.number - 1}, size=${citas.size})}">Anterior</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, citas.totalPages - 1)}" th:classappend="${i == citas.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin(tab='citas', page=${i}, size=${citas.size})}" th:text="${i + 1}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, citas.totalPages - 1)}"
+                            th:classappend="${i == citas.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin(tab='citas', page=${i}, size=${citas.size})}"
+                                th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${citas.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin(tab='citas', page=${citas.number + 1}, size=${citas.size})}">Siguiente</a>
+                            <a class="page-link"
+                                th:href="@{/admin(tab='citas', page=${citas.number + 1}, size=${citas.size})}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
@@ -326,18 +374,20 @@
         </div>
     </div>
 
+    <!-- Inclusión del fragmento del footer -->
     <div th:replace="fragments/footer :: footer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <!-- Script para inicializar el gráfico de Chart.js -->
     <script th:inline="javascript">
         /*<![CDATA[*/
 
         // 1. Obtener los datos del modelo de Thymeleaf
-        const numUsuarios = [[${numUsuarios}]];
-        const numMascotas = [[${numMascotas}]];
-        const numCitas = [[${numCitas}]];
-        const numVeterinarios = [[${numVeterinarios}]];
+        const numUsuarios = [[${ numUsuarios }]];
+        const numMascotas = [[${ numMascotas }]];
+        const numCitas = [[${ numCitas }]];
+        const numVeterinarios = [[${ numVeterinarios }]];
 
         // 2. Preparar los datos para Chart.js
         const datosTotales = {
@@ -356,9 +406,9 @@
             }]
         };
 
-        // 3. Configurar el gráfico
+        // 3. Se define la configuración del gráfico (tipo, opciones de ejes, leyenda, etc.).
         const config = {
-            type: 'bar', // Gráfico de barras
+            type: 'bar', // Tipo de gráfico: barras
             data: datosTotales,
             options: {
                 responsive: true,
@@ -371,7 +421,7 @@
                         },
                         // Aseguramos que solo muestre números enteros en el eje Y
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 if (Number.isInteger(value)) {
                                     return value;
                                 }
@@ -386,7 +436,7 @@
                 },
                 plugins: {
                     legend: {
-                        display: false 
+                        display: false
                     },
                     title: {
                         display: true,
@@ -396,8 +446,8 @@
             }
         };
 
-        // 4. Renderizar el gráfico
-        window.addEventListener('load', function() {
+        // 4. Se renderiza el gráfico en el canvas 'totalesChart' cuando la página ha cargado.
+        window.addEventListener('load', function () {
             const ctx = document.getElementById('totalesChart').getContext('2d');
             new Chart(ctx, config);
         });
