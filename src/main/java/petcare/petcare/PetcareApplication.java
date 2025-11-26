@@ -1,4 +1,4 @@
-package petcare.petcare;   // 👈 OJO: este package, NO ".service"
+package petcare.petcare;   // este package, NO ".service"
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
