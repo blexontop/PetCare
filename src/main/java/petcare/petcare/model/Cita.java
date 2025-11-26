@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Getter
 @Setter
@@ -32,13 +34,17 @@ public class Cita {
     @JoinColumn(name = "mascota_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Mascota mascota;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinario_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Veterinario veterinario;
 
     private LocalDateTime createdAt;
+
+    
 }
