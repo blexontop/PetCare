@@ -73,7 +73,6 @@ public class MascotaController {
 
         model.addAttribute("usuario", userRepository.findByEmail(email).orElse(null));
         model.addAttribute("duenos", duenoRepository.findAll());
-        model.addAttribute("isPersonal", false);
         return "mascota-form";
     }
 
@@ -97,7 +96,6 @@ public class MascotaController {
         }
 
         model.addAttribute("usuario", userRepository.findByEmail(email).orElse(null));
-        model.addAttribute("isPersonal", true);
         // no duenos attribute, so owner select hidden
         return "mascota-form-personal";
     }
@@ -220,8 +218,8 @@ public class MascotaController {
         if (mascota == null) {
             return "redirect:/admin?error=MascotaNoEncontrada";
         }
-        // Permitir editar si usuario es admin o dueño
-        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+        // Permitir editar si usuario es admin
+        if (!adminEmail.equals(email)) {
             return "redirect:/admin?error=NoAutorizado";
         }
 
@@ -261,8 +259,8 @@ public class MascotaController {
         if (mascota == null) {
             return "redirect:/admin?error=MascotaNoEncontrada";
         }
-        // Permitir actualizar si usuario es admin o dueño
-        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+        // Permitir actualizar si usuario es admin
+        if (!adminEmail.equals(email)) {
             return "redirect:/admin?error=NoAutorizado";
         }
 

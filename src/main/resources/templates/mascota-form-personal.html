@@ -107,21 +107,6 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12" th:if="${duenos}">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="duenoId" name="duenoId" required>
-                                            <option value="">Seleccionar dueño</option>
-                                            <option th:each="dueno : ${duenos}" th:value="${dueno.id}"
-                                                th:text="${dueno.nombre}"
-                                                th:selected="${mascota != null and mascota.dueno != null and dueno.id == mascota.dueno.id}">
-                                            </option>
-                                        </select>
-                                        <label for="duenoId">
-                                            <i class="fas fa-user me-2"></i>Dueño
-                                        </label>
-                                    </div>
-                                </div>
-
                                 <div class="col-12 mt-4">
                                     <button type="submit" class="btn btn-primary w-100 mb-2">
                                         <i class="fas fa-save me-2"></i>Guardar Mascota
@@ -131,8 +116,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <input type="hidden" name="duenoId"
-                                th:value="${usuario != null and usuario.dueno != null} ? ${usuario.dueno.id} : ''" />
+                            <input type="hidden" name="duenoId" th:value="${usuario.dueno.id}" />
                         </form>
                     </div>
                 </div>
