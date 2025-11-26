@@ -1,20 +1,13 @@
-Registro de auditoría de quién realiza cada acción
-
-Enviar correos en diferentes situaciones (mirar el PDF del trabajo), también para recordatorios de vacunas
-
-Gráficos visuales de datos con chart.js o similar en el panel de administrador
-
-Exportación avanzada (con variables de filtros)
-
-En el Dashboard, resumen de actividad reciente y permitir modificar datos de usuario y foto
-
-añadir vistas de otros datos de la bd, con un selector por tabs por ejemplo, en el de admin. y que en el de cada usuario pueda ver sus citas también
-
-Caché de datos frecuentes (subir nota)
-
 README
 
 Presentación
+
+Enviar correos en diferentes situaciones (mirar el PDF del trabajo), también para recordatorios de vacunas
+
+NO PRIORITARIOS:
+Registro de auditoría de quién realiza cada acción
+Caché de datos frecuentes (subir nota)
+En el Dashboard, resumen de actividad reciente y permitir modificar datos de usuario y foto
 
 HECHOS:
 Mínimo 20 registros por tabla de la bd
@@ -28,3 +21,5 @@ Búsqueda y filtrado avanzado en panel de admin.
 Vista mascota
 Exportación simple
 Añadir paginación en listados
+añadir vistas de otros datos de la bd, con un selector por tabs por ejemplo, en el de admin. y que en el de cada usuario pueda ver sus citas también
+Gráficos visuales de datos con chart.js o similar en el panel de administrador
