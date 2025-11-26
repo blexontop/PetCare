@@ -11,103 +11,103 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         body {
             min-height: 100vh;
         }
-
-        /* Estilos de .map-container eliminados */
         #map {
             height: 600px;
             border-radius: 15px;
-            /* Manteniendo el radio del mapa */
         }
     </style>
 </head>
 
 <body>
-    <div th:replace="fragments/header :: navbar"></div>
+<div th:replace="fragments/header :: navbar"></div>
 
-    <div class="container mt-4">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <div>
-                <h1 class="mb-2">
-                    Encuentra Veterinarios Cercanos</i>
-                </h1>
-                <p class="mb-0 opacity-75">Localiza clínicas veterinarias y especialistas en tu zona</p>
-            </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-primary" onclick="locateUser()">
-                    <i class="fas fa-crosshairs me-2"></i>Mi Ubicación
-                </button>
-                <button class="btn btn-primary" onclick="findNearbyVet()">
-                    <i class="fas fa-search me-2"></i>Buscar Veterinarios
-                </button>
-            </div>
+<div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="mb-2">Encuentra Veterinarios Cercanos</h1>
+            <p class="mb-0 opacity-75">Localiza clínicas veterinarias y especialistas en tu zona</p>
         </div>
-
-        <div id="map"></div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" onclick="locateUser()">
+                <i class="fas fa-crosshairs me-2"></i>Mi Ubicación
+            </button>
+        </div>
     </div>
 
-    <script>
-        var map = L.map('map').setView([40.4168, -3.7038], 13); // Madrid
+    <div id="map"></div>
+</div>
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+<script>
+    // Inicializar mapa centrado en Madrid
+    var map = L.map('map').setView([40.4168, -3.7038], 13);
 
-        // Añadir algunos marcadores de ejemplo para veterinarios
-        var veterinarios = [
-            { lat: 40.4168, lng: -3.7038, nombre: "Clínica Veterinaria Central", telefono: "91 123 45 67" },
-            { lat: 40.4200, lng: -3.7100, nombre: "Hospital Veterinario Madrid", telefono: "91 234 56 78" },
-            { lat: 40.4130, lng: -3.6970, nombre: "Veterinaria Plaza España", telefono: "91 345 67 89" }
-        ];
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        veterinarios.forEach(function (vet) {
-            L.marker([vet.lat, vet.lng])
-                .addTo(map)
-                .bindPopup(`
-                <div class="text-center">
-                    <h6><i class="fas fa-clinic-medical text-primary me-2"></i>${vet.nombre}</h6>
-                    <p class="mb-1"><i class="fas fa-phone text-muted me-2"></i>${vet.telefono}</p>
-                    <button class="btn btn-primary btn-sm" onclick="callVet('${vet.telefono}')">
-                        <i class="fas fa-phone me-1"></i>Llamar
-                    </button>
-                </div>
-            `);
-        });
+    // Cargar veterinarios de la API
+    fetch("/api/veterinarios")
+        .then(response => response.json())
+        .then(veterinarios => {
 
-        function locateUser() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
-                    map.setView([lat, lng], 15);
-                    L.marker([lat, lng])
+            veterinarios.forEach(vet => {
+
+                // ✔ CORREGIDO: comprobar null en lugar de truthy
+                if (vet.latitud != null && vet.longitud != null) {
+
+                    L.marker([vet.latitud, vet.longitud])
                         .addTo(map)
-                        .bindPopup('<i class="fas fa-map-marker-alt text-danger me-2"></i>Tu ubicación')
-                        .openPopup();
-                });
-            } else {
-                alert('La geolocalización no está soportada por este navegador.');
-            }
+                        .bindPopup(`
+                            <div class="text-center">
+                                <h6><i class="fas fa-clinic-medical text-primary me-2"></i>${vet.nombre}</h6>
+                                <p class="mb-1"><i class="fas fa-user-md text-muted me-2"></i>${vet.especialidad || "General"}</p>
+                                <p class="mb-1"><i class="fas fa-phone text-muted me-2"></i>${vet.telefono || "No disponible"}</p>
+                                <p class="mb-1"><i class="fas fa-map-marker-alt text-muted me-2"></i>${vet.direccion || ""}</p>
+                                <button class="btn btn-primary btn-sm" onclick="callVet('${vet.telefono}')">
+                                    <i class="fas fa-phone me-1"></i>Llamar
+                                </button>
+                            </div>
+                        `);
+                }
+            });
+
+        })
+        .catch(error => console.error("Error cargando veterinarios:", error));
+
+    // Ubicación del usuario
+    function locateUser() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+
+                map.setView([lat, lng], 15);
+
+                L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup('<i class="fas fa-map-marker-alt text-danger me-2"></i>Tu ubicación')
+                    .openPopup();
+            });
+        } else {
+            alert('La geolocalización no está soportada por este navegador.');
         }
+    }
 
-        function findNearbyVet() {
-            // Simular búsqueda de veterinarios cercanos
-            alert('Buscando veterinarios cercanos...');
-            // Aquí se podría implementar una búsqueda real con APIs
-        }
+    // Llamada telefónica
+    function callVet(telefono) {
+        window.location.href = 'tel:' + telefono;
+    }
+</script>
 
-        function callVet(telefono) {
-            window.location.href = 'tel:' + telefono;
-        }
-    </script>
+<div th:replace="fragments/footer :: footer"></div>
 
-    <div th:replace="fragments/footer :: footer"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
