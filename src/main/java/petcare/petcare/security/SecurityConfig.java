@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import lombok.RequiredArgsConstructor;
-import petcare.petcare.security.CustomUserDetailsService;
+// import petcare.petcare.security.CustomUserDetailsService; // Comentado: clase del mismo paquete no necesita import
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
 @Configuration
