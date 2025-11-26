@@ -73,7 +73,7 @@
                                     <span th:if="${m.fotoUrl == null}">Sin foto</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{'/mascotas/' + ${m.id} + '/editar'}"
+                                    <a th:href="@{'/mascotas/' + ${m.id} + '/editar/personal'}"
                                         class="btn btn-sm btn-primary me-1">Editar</a>
                                     <a th:href="@{'/mascotas/' + ${m.id} + '/eliminar'}" class="btn btn-sm btn-danger"
                                         onclick="return confirm('¿Estás seguro de eliminar esta mascota?');">Eliminar</a>
@@ -101,6 +101,7 @@
                 </div>
             </div>
 
+            <!-- Quitamos por ahora estas secciones
             <div class="row mt-4 g-4">
                 <div class="col-md-6">
                     <div class="card h-100 shadow border-0">
@@ -127,6 +128,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
         <div th:if="${usuario == null}">
             <div class="alert alert-warning text-center">

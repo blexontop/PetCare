@@ -1,10 +1,8 @@
 package petcare.petcare.controller;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -48,56 +46,49 @@ public class MascotaController {
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
 
+    // --- MÉTODOS AUXILIARES ---
+
+    private String getAuthenticatedEmail(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof OAuth2User oauth2User) {
+            return oauth2User.getAttribute("email");
+        } else if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        return null;
+    }
+
+    private boolean isAdmin(String email) {
+        return adminEmail.equals(email);
+    }
+
+    // --- CREACIÓN DE MASCOTA (SE MANTIENE CASI IGUAL) ---
+
     @GetMapping("/mascotas/nueva")
     public String mostrarFormularioNuevaMascota(Authentication authentication, Model model) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
 
-        String email = null;
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-
-        if (email == null) {
-            return "redirect:/login";
-        }
-
-        if (!adminEmail.equals(email)) {
+        if (!isAdmin(email)) {
             return "redirect:/dashboard";
         }
 
         model.addAttribute("usuario", userRepository.findByEmail(email).orElse(null));
-        model.addAttribute("duenos", duenoRepository.findAll());
-        return "mascota-form";
+        model.addAttribute("duenos", duenoRepository.findAll()); // Solo visible para el admin
+        return "mascota-form"; // Usa el formulario que incluye la selección de dueño
     }
 
     @GetMapping("/mascotas/nueva/personal")
     public String mostrarFormularioNuevaMascotaPersonal(Authentication authentication, Model model) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
-
-        String email = null;
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-
-        if (email == null) {
-            return "redirect:/login";
-        }
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
 
         model.addAttribute("usuario", userRepository.findByEmail(email).orElse(null));
-        // no duenos attribute, so owner select hidden
-        return "mascota-form-personal";
+        // No se añade 'duenos' al modelo para ocultar el selector en el formulario personal
+        return "mascota-form-personal"; // Usa el formulario personal
     }
 
     @PostMapping("/mascotas")
@@ -107,27 +98,20 @@ public class MascotaController {
             @RequestParam(required = false) String raza,
             @RequestParam(required = false) String fechaNacimiento,
             @RequestParam(required = false) Double peso,
-            @RequestParam(required = false) Long duenoId) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
-        String email = null;
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-        if (email == null) {
-            return "redirect:/login";
-        }
+            @RequestParam(required = false) Long duenoId) { // duenoId es opcional en la petición POST
+        
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
 
         Dueno dueno;
-        if (adminEmail.equals(email) && duenoId != null) {
+        if (isAdmin(email) && duenoId != null) {
+            // El admin puede asignar un dueño específico
             dueno = duenoRepository.findById(duenoId).orElse(null);
         } else {
+            // Usuario normal o admin sin duenoId asigna el dueño por su propio email
             dueno = duenoRepository.findByEmail(email).orElse(null);
         }
+
         if (dueno == null) {
             return "redirect:/dashboard?error=SinDuenoAsignado";
         }
@@ -151,86 +135,49 @@ public class MascotaController {
         }
 
         mascotaRepository.save(mascota);
-        if (adminEmail.equals(email)) {
+        
+        if (isAdmin(email)) {
             return "redirect:/admin";
         }
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/mascotas/{id}/eliminar")
-    public String eliminarMascota(Authentication authentication, @PathVariable Long id) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
+    // --- EDICIÓN DE MASCOTA (MÉTODOS UNIFICADOS) ---
 
-        String email = null;
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-
-        if (email == null) {
-            return "redirect:/login";
-        }
-
-        Mascota mascota = mascotaRepository.findById(id).orElse(null);
-        if (mascota == null) {
-            // Mascota no encontrada, redirigir con error
-            return "redirect:/admin?error=MascotaNoEncontrada";
-        }
-        // Permitir eliminar si usuario es admin o dueño de la mascota
-        if (!adminEmail.equals(email) && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
-            // No autorizado para eliminar
-            return "redirect:/admin?error=NoAutorizado";
-        }
-
-        // Delete all associated citas first to avoid foreign key constraint violation
-        List<Cita> citasAsociadas = citaRepository.findByMascota(mascota);
-        for (Cita cita : citasAsociadas) {
-            citaRepository.deleteById(cita.getId());
-        }
-        mascotaRepository.deleteById(id);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/mascotas/{id}/editar")
-    public String mostrarFormularioEditarMascota(Authentication authentication, @PathVariable Long id,
-            Model model) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
-
-        String email = null;
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-
-        if (email == null) {
-            return "redirect:/login";
-        }
+    // Este GET ahora sirve tanto para admin como para el dueño, y se encarga de elegir la vista (form)
+    @GetMapping({"/mascotas/{id}/editar", "/mascotas/{id}/editar/personal"})
+    public String mostrarFormularioEditarMascota(Authentication authentication, @PathVariable Long id, Model model) {
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
 
         Mascota mascota = mascotaRepository.findById(id).orElse(null);
         if (mascota == null) {
             return "redirect:/admin?error=MascotaNoEncontrada";
         }
-        // Permitir editar si usuario es admin
-        if (!adminEmail.equals(email)) {
+        
+        boolean esAdmin = isAdmin(email);
+        
+        // Verificar autorización (Admin O Dueño)
+        if (!esAdmin && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
             return "redirect:/admin?error=NoAutorizado";
         }
 
         model.addAttribute("mascota", mascota);
-        model.addAttribute("duenos", duenoRepository.findAll());
         User user = userRepository.findByEmail(email).orElse(null);
         model.addAttribute("usuario", user);
-        return "mascota-form";
+
+        if (esAdmin) {
+            // Si es admin, añade la lista de dueños y usa el formulario 'admin'
+            model.addAttribute("duenos", duenoRepository.findAll());
+            return "mascota-form";
+        } else {
+            // Si es dueño, usa el formulario 'personal' (oculta el selector de dueño)
+            return "mascota-form-personal";
+        }
     }
 
-    @PostMapping("/mascotas/{id}/editar")
+    // Este POST unificado maneja ambas rutas de actualización
+    @PostMapping({"/mascotas/{id}/editar", "/mascotas/{id}/editar/personal"})
     public String actualizarMascota(Authentication authentication,
             @PathVariable Long id,
             @RequestParam String nombre,
@@ -238,40 +185,47 @@ public class MascotaController {
             @RequestParam(required = false) String raza,
             @RequestParam(required = false) String fechaNacimiento,
             @RequestParam(required = false) Double peso,
-            @RequestParam Long duenoId) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
-
-        String email = null;
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof OAuth2User oauth2User) {
-            email = oauth2User.getAttribute("email");
-        } else if (principal instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-
-        if (email == null) {
-            return "redirect:/login";
-        }
+            // duenoId solo debe ser requerido si la petición viene del admin (ruta normal)
+            // Para unificar, lo hacemos opcional aquí y usamos lógica condicional para el admin
+            @RequestParam(required = false) Long duenoId) { 
+        
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
 
         Mascota mascota = mascotaRepository.findById(id).orElse(null);
         if (mascota == null) {
             return "redirect:/admin?error=MascotaNoEncontrada";
         }
-        // Permitir actualizar si usuario es admin
-        if (!adminEmail.equals(email)) {
-            return "redirect:/admin?error=NoAutorizado";
+        
+        boolean esAdmin = isAdmin(email);
+
+        // Verificar autorización (Admin O Dueño)
+        if (!esAdmin && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+            return "redirect:/dashboard?error=NoAutorizado";
         }
 
-        Dueno dueno = duenoRepository.findById(duenoId).orElse(null);
+        Dueno nuevoDueno;
+        if (esAdmin && duenoId != null) {
+            // Si es Admin y se envió un duenoId, usa ese
+            nuevoDueno = duenoRepository.findById(duenoId).orElse(null);
+        } else if (!esAdmin) {
+            // Si es un usuario normal (no admin), el dueño NO se puede cambiar y debe ser él mismo
+            nuevoDueno = duenoRepository.findByEmail(email).orElse(null);
+        } else {
+            // Caso por defecto: Si es admin pero no envió duenoId, mantiene el actual
+            nuevoDueno = mascota.getDueno();
+        }
+
+        if (nuevoDueno == null) {
+            return "redirect:/dashboard?error=DuenoInvalido";
+        }
 
         // Actualizar campos
         mascota.setNombre(nombre);
         mascota.setEspecie(especie);
         mascota.setRaza(raza);
         mascota.setPeso(peso);
-        mascota.setDueno(dueno);
+        mascota.setDueno(nuevoDueno); // El dueno se asigna según la lógica anterior
 
         if (fechaNacimiento != null && !fechaNacimiento.isBlank()) {
             mascota.setFechaNacimiento(LocalDate.parse(fechaNacimiento));
@@ -279,8 +233,7 @@ public class MascotaController {
             mascota.setFechaNacimiento(null);
         }
 
-        // Actualizar imagen de Dog/Cat API basada en especie (opcional, puede omitirse
-        // si se quieren mantener fotos)
+        // Actualizar imagen
         if ("PERRO".equalsIgnoreCase(especie)) {
             mascota.setFotoUrl(dogCatApiService.obtenerImagenPerroAleatoria());
         } else if ("GATO".equalsIgnoreCase(especie)) {
@@ -290,34 +243,69 @@ public class MascotaController {
         }
 
         mascotaRepository.save(mascota);
-        return "redirect:/admin";
+        
+        if (esAdmin) {
+            return "redirect:/admin";
+        }
+        return "redirect:/dashboard";
     }
+
+    // --- ELIMINACIÓN DE MASCOTA (SE MANTIENE IGUAL) ---
+
+    @GetMapping("/mascotas/{id}/eliminar")
+    public String eliminarMascota(Authentication authentication, @PathVariable Long id) {
+        String email = getAuthenticatedEmail(authentication);
+        if (email == null) return "redirect:/login";
+
+        Mascota mascota = mascotaRepository.findById(id).orElse(null);
+        if (mascota == null) {
+            return "redirect:/admin?error=MascotaNoEncontrada";
+        }
+        
+        boolean esAdmin = isAdmin(email);
+
+        // Permitir eliminar si usuario es admin o dueño de la mascota
+        if (!esAdmin && (mascota.getDueno() == null || !email.equals(mascota.getDueno().getEmail()))) {
+            String redirectUrl = esAdmin ? "/admin" : "/dashboard";
+            return "redirect:" + redirectUrl + "?error=NoAutorizado";
+        }
+
+        // Eliminar citas asociadas para evitar violaciones de clave foránea
+        List<Cita> citasAsociadas = citaRepository.findByMascota(mascota);
+        for (Cita cita : citasAsociadas) {
+            citaRepository.deleteById(cita.getId());
+        }
+        mascotaRepository.deleteById(id);
+        
+        if (esAdmin) {
+            return "redirect:/admin";
+        }
+        return "redirect:/dashboard";
+    }
+
+    // --- MÉTODOS DE EXPORTACIÓN (SE MANTIENEN IGUAL) ---
 
     // Metodo para exportar mascotas a CSV
     @GetMapping(value = "/export/csv", produces = "text/csv")
     public void exportMascotasCSV(HttpServletResponse response) throws IOException {
-
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename=mascotas.csv");
 
         PrintWriter writer = response.getWriter();
-
-        // Encabezado CSV
         writer.println("id,nombre,especie,raza,fecha_nacimiento,peso,foto_url,dueno_id");
 
-        // Obtener mascotas de BD
         List<Mascota> mascotas = mascotaRepository.findAll();
 
         for (Mascota m : mascotas) {
             writer.println(
                     m.getId() + "," +
-                            m.getNombre() + "," +
-                            m.getEspecie() + "," +
-                            m.getRaza() + "," +
-                            m.getFechaNacimiento() + "," +
-                            m.getPeso() + "," +
-                            m.getFotoUrl() + "," +
-                            (m.getDueno() != null ? m.getDueno().getId() : ""));
+                    m.getNombre() + "," +
+                    m.getEspecie() + "," +
+                    m.getRaza() + "," +
+                    m.getFechaNacimiento() + "," +
+                    m.getPeso() + "," +
+                    m.getFotoUrl() + "," +
+                    (m.getDueno() != null ? m.getDueno().getId() : ""));
         }
 
         writer.flush();
@@ -327,7 +315,6 @@ public class MascotaController {
     // Metodo para exportar mascotas a PDF
     @GetMapping(value = "/export/pdf", produces = "application/pdf")
     public void exportMascotasPDF(HttpServletResponse response) throws Exception {
-
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=mascotas.pdf");
 
@@ -340,11 +327,9 @@ public class MascotaController {
 
         List<Mascota> mascotas = mascotaRepository.findAll();
 
-        // Crear tabla con 8 columnas
         PdfPTable table = new PdfPTable(8);
         table.setWidthPercentage(100);
 
-        // Encabezados
         table.addCell("ID");
         table.addCell("Nombre");
         table.addCell("Especie");
@@ -354,7 +339,6 @@ public class MascotaController {
         table.addCell("Foto URL");
         table.addCell("Dueño ID");
 
-        // Filas
         for (Mascota m : mascotas) {
             table.addCell(String.valueOf(m.getId()));
             table.addCell(m.getNombre());
@@ -366,10 +350,7 @@ public class MascotaController {
             table.addCell(m.getDueno() != null ? String.valueOf(m.getDueno().getId()) : "");
         }
 
-        // Añadir tabla al documento
         document.add(table);
-
         document.close();
     }
-
 }

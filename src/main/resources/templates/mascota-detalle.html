@@ -224,19 +224,21 @@
                             <th>Veterinario</th>
                             <th>Estado</th>
                             <th>Motivo</th>
+                            <th>Notas</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="cita : ${mascota.citas}">
-                            <td th:text="${cita.fecha}"></td>
-                            <td th:text="${cita.hora}"></td>
+                            <td th:text="${cita.fechaHora.toLocalDate()}"></td>
+                            <td th:text="${cita.fechaHora.toLocalTime()}"></td>
                             <td th:text="${cita.veterinario != null ? cita.veterinario.nombre : 'Sin asignar'}"></td>
                             <td>
                                 <span
-                                    th:class="'badge ' + (${cita.estado.name()} == 'COMPLETADA' ? 'bg-success' : ${cita.estado.name()} == 'PENDIENTE' ? 'bg-warning' : 'bg-danger')"
-                                    th:text="${cita.estado}"></span>
+                                    th:class="'badge ' + (${cita.estado?.name() == 'COMPLETADA' ? 'bg-success' : cita.estado?.name() == 'PENDIENTE' ? 'bg-warning' : cita.estado?.name() == 'CONFIRMADA' ? 'bg-primary' : 'bg-danger'})"
+                                    th:text="${cita.estado != null ? cita.estado : 'N/A'}"></span>
                             </td>
-                            <td th:text="${cita.motivo != null ? cita.motivo : '-'}"></td>
+                            <td th:text="${(cita.motivo != null and !cita.motivo.isEmpty()) ? cita.motivo : '-'}"></td>
+                            <td th:text="${(cita.notas != null and !cita.notas.isEmpty()) ? cita.notas : '-'}"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -247,7 +249,7 @@
         </div>
     </div>
 
-    <div style="margin-top: 3rem;" th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: footer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
