@@ -1,3 +1,9 @@
+<!--
+Este archivo HTML presenta un formulario para que los usuarios completen su perfil de "Dueño"
+después del registro inicial, especialmente tras un inicio de sesión con OAuth donde
+no se solicitan todos los datos.
+Pide información adicional como teléfono, dirección y ciudad.
+-->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
@@ -9,8 +15,8 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Estilos específicos para esta página con el branding de Petcare (color verde) -->
     <style>
-        /* Variables de color Petcare (verde) */
         :root {
             --petcare-green: #438a56;
             --petcare-green-hover: #3a7a4a;
@@ -21,7 +27,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Aplicar fondo verde aquí */
             background: var(--petcare-green);
         }
 
@@ -32,34 +37,20 @@
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
-
-        .form-floating>label {
-            padding: 1rem 0.75rem;
-        }
-
-        /* Estilos para que el logo y el texto principal sean verdes */
+        
         .text-primary {
             color: var(--petcare-green) !important;
         }
-
-        /* Estilos para el botón primario (Guardar y Continuar) */
+        
         .btn-primary {
-            /* Fondo principal verde */
             background-color: var(--petcare-green) !important;
             border-color: var(--petcare-green) !important;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 500;
-            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            /* Hover verde más oscuro */
             background-color: var(--petcare-green-hover) !important;
             border-color: var(--petcare-green-hover) !important;
             transform: translateY(-2px);
-            /* Ajuste de sombra para el color verde */
             box-shadow: 0 5px 15px rgba(67, 138, 86, 0.4);
         }
     </style>
@@ -79,8 +70,14 @@
                                     experiencia</p>
                             </div>
 
+                            <!--
+                            El formulario envía los datos al endpoint /dueno/completar.
+                            Los campos se pre-llenan con los datos existentes del objeto 'dueno'
+                            pasado desde el controlador.
+                            -->
                             <form th:action="@{/dueno/completar}" method="post">
                                 <div class="row g-3">
+                                    <!-- Campo para el nombre -->
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="nombre" name="nombre"
@@ -90,7 +87,8 @@
                                             </label>
                                         </div>
                                     </div>
-
+                                    
+                                    <!-- Campo para la contraseña, probablemente para establecerla por primera vez o cambiarla -->
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="password" class="form-control" id="password" name="password"
@@ -101,6 +99,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Campos para teléfono, dirección y ciudad -->
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="tel" class="form-control" id="telefono" name="telefono"
@@ -110,7 +109,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="direccion" name="direccion"
@@ -120,7 +118,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="ciudad" name="ciudad"
@@ -131,6 +128,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Botón de envío -->
                                     <div class="col-12 mt-4">
                                         <button type="submit" class="btn btn-primary w-100">
                                             <i class="fas fa-save me-2"></i>Guardar y Continuar
