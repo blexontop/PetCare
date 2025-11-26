@@ -72,7 +72,18 @@ Utiliza Thymeleaf para esta lógica condicional y para poblar los campos del for
                                             <option value="GATO"
                                                 th:selected="${mascota != null and mascota.especie=='GATO'}">🐱 Gato
                                             </option>
-                                            <!-- ... más opciones ... -->
+                                            <option value="AVE"
+                                                th:selected="${mascota != null and mascota.especie=='AVE'}">🐦 Ave
+                                            </option>
+                                            <option value="REPTIL"
+                                                th:selected="${mascota != null and mascota.especie=='REPTIL'}">🦎 Reptil
+                                            </option>
+                                            <option value="PEZ"
+                                                th:selected="${mascota != null and mascota.especie=='PEZ'}">🐠 Pez
+                                            </option>
+                                            <option value="OTRO"
+                                                th:selected="${mascota != null and mascota.especie=='OTRO'}">🐾 Otro
+                                            </option>
                                         </select>
                                         <label for="especie">
                                             <i class="fas fa-paw me-2"></i>Especie
@@ -91,7 +102,7 @@ Utiliza Thymeleaf para esta lógica condicional y para poblar los campos del for
                                         </label>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Campos para fecha de nacimiento y peso -->
                                 <div class="col-md-6">
                                     <div class="form-floating">

@@ -384,10 +384,10 @@ Es una página compleja que incluye:
         /*<![CDATA[*/
 
         // 1. Obtener los datos del modelo de Thymeleaf
-        const numUsuarios = [[${ numUsuarios }]];
-        const numMascotas = [[${ numMascotas }]];
-        const numCitas = [[${ numCitas }]];
-        const numVeterinarios = [[${ numVeterinarios }]];
+        const numUsuarios = /*[[${numUsuarios}]]*/ 0;
+        const numMascotas = /*[[${numMascotas}]]*/ 0;
+        const numCitas = /*[[${numCitas}]]*/ 0;
+        const numVeterinarios = /*[[${numVeterinarios}]]*/ 0;
 
         // 2. Preparar los datos para Chart.js
         const datosTotales = {
