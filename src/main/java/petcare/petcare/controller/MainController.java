@@ -1,32 +1,32 @@
 package petcare.petcare.controller;
 
-import lombok.RequiredArgsConstructor; // Importamos el constructor con Lombok
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // Usado para obtener detalles del usuario autenticado
-import org.springframework.security.crypto.password.PasswordEncoder; // Para encriptar contraseñas
-import org.springframework.security.oauth2.core.user.OAuth2User; // Para interactuar con usuarios de OAuth2 (Google, GitHub, etc.)
-import org.springframework.beans.factory.annotation.Value; // Para inyectar valores del archivo properties
-import org.springframework.security.core.Authentication; // Información de autenticación
-import org.springframework.security.core.userdetails.UserDetails; // Información del usuario
-import org.springframework.stereotype.Controller; // Clase controladora en Spring
-import org.springframework.ui.Model; // Para pasar datos a las vistas
-import org.springframework.web.bind.annotation.GetMapping; // Método HTTP GET
-import org.springframework.web.bind.annotation.ModelAttribute; // Para recibir datos de formularios
-import org.springframework.web.bind.annotation.PostMapping; // Método HTTP POST
-import org.springframework.web.bind.annotation.RequestParam; // Para leer parámetros de la URL
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // Para agregar mensajes de éxito/ error en redirecciones
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; 
+import org.springframework.security.crypto.password.PasswordEncoder; 
+import org.springframework.security.oauth2.core.user.OAuth2User; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails; 
+import org.springframework.stereotype.Controller; 
+import org.springframework.ui.Model; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.ModelAttribute; 
+import org.springframework.web.bind.annotation.PostMapping; 
+import org.springframework.web.bind.annotation.RequestParam; 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
 
 // import petcare.petcare.model.AuthProvider; // Modelos de autenticación (comentado para evitar warning si no se usa)
-import petcare.petcare.model.Dueno; // Modelos para la entidad Dueno (dueño de la mascota)
-import petcare.petcare.model.Mascota; // Modelo para la entidad Mascota
-import petcare.petcare.model.User; // Modelo para la entidad Usuario
-import petcare.petcare.repository.DuenoRepository; // Repositorio para acceso a datos de Dueno
-import petcare.petcare.repository.MascotaRepository; // Repositorio para acceso a datos de Mascota
-import petcare.petcare.repository.UserRepository; // Repositorio para acceso a datos de Usuario
-import petcare.petcare.service.EmailService; // Servicio para enviar correos electrónicos
+import petcare.petcare.model.Dueno; 
+import petcare.petcare.model.Mascota; 
+import petcare.petcare.model.User; 
+import petcare.petcare.repository.DuenoRepository; 
+import petcare.petcare.repository.MascotaRepository; 
+import petcare.petcare.repository.UserRepository;
+import petcare.petcare.service.EmailService; 
 
-import java.time.LocalDateTime; // Para manejar fechas y horas
-import java.util.List; // Para listas
-import jakarta.servlet.http.HttpSession; // Para manejar sesiones HTTP
+import java.time.LocalDateTime; 
+import java.util.List; 
+import jakarta.servlet.http.HttpSession; 
 
 @Controller // Indicamos que esta clase es un controlador
 @RequiredArgsConstructor // Lombok genera un constructor con todas las dependencias final

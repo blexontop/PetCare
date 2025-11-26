@@ -1,37 +1,39 @@
 package petcare.petcare.controller;
 
-import lombok.RequiredArgsConstructor; // Lombok: genera el constructor automáticamente con todas las dependencias
-import org.springframework.beans.factory.annotation.Value; // Para inyectar valores desde application.properties
-import org.springframework.security.core.Authentication; // Para obtener detalles sobre el usuario autenticado
-import org.springframework.security.core.userdetails.UserDetails; // Detalles del usuario normal
-import org.springframework.security.oauth2.core.user.OAuth2User; // Detalles de usuario OAuth2 (como Google, GitHub)
-import org.springframework.stereotype.Controller; // Para indicar que esta clase es un controlador
-import org.springframework.ui.Model; // Usado para pasar datos de la lógica a la vista
-import org.springframework.web.bind.annotation.GetMapping; // Para definir métodos que manejan peticiones GET
-import org.springframework.web.bind.annotation.PathVariable; // Para capturar valores de las rutas dinámicas
-import org.springframework.web.bind.annotation.PostMapping; // Para manejar peticiones POST
-import org.springframework.web.bind.annotation.RequestParam; // Para acceder a parámetros pasados en las URLs
+package petcare.petcare.controller;
 
-import com.itextpdf.text.Document; // Para crear el documento PDF
-import com.itextpdf.text.Paragraph; // Para agregar párrafos al documento PDF
-import com.itextpdf.text.pdf.PdfPTable; // Para agregar tablas al PDF
-import com.itextpdf.text.pdf.PdfWriter; // Para escribir en el PDF
+import lombok.RequiredArgsConstructor; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.security.core.Authentication; 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User; 
+import org.springframework.stereotype.Controller; 
+import org.springframework.ui.Model; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.PathVariable; 
+import org.springframework.web.bind.annotation.PostMapping; 
+import org.springframework.web.bind.annotation.RequestParam; 
 
-import jakarta.servlet.http.HttpServletResponse; // Para controlar la respuesta HTTP
-import petcare.petcare.model.Dueno; // Modelo para la entidad Dueno (dueño de la mascota)
-import petcare.petcare.model.Mascota; // Modelo para la entidad Mascota
-import petcare.petcare.model.User; // Modelo para la entidad Usuario
-import petcare.petcare.model.Cita; // Modelo para la entidad Cita
-import petcare.petcare.repository.DuenoRepository; // Repositorio para la entidad Dueno
-import petcare.petcare.repository.MascotaRepository; // Repositorio para la entidad Mascota
-import petcare.petcare.repository.UserRepository; // Repositorio para la entidad Usuario
-import petcare.petcare.repository.CitaRepository; // Repositorio para la entidad Cita
-import petcare.petcare.service.DogCatApiService; // Servicio para obtener imágenes de perros y gatos
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph; 
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.IOException; // Excepciones relacionadas con la entrada/salida de datos
-import java.io.PrintWriter; // Para escribir datos en la respuesta
-import java.time.LocalDate; // Para manejar fechas
-import java.util.List; // Para manejar listas de objetos
+import jakarta.servlet.http.HttpServletResponse;
+import petcare.petcare.model.Dueno;
+import petcare.petcare.model.Mascota;
+import petcare.petcare.model.User;
+import petcare.petcare.model.Cita;
+import petcare.petcare.repository.DuenoRepository;
+import petcare.petcare.repository.MascotaRepository;
+import petcare.petcare.repository.UserRepository;
+import petcare.petcare.repository.CitaRepository;
+import petcare.petcare.service.DogCatApiService;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller // Indicamos que esta clase es un controlador de Spring
 @RequiredArgsConstructor // Lombok genera un constructor con todas las dependencias 'final'

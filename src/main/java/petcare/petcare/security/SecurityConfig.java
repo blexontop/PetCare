@@ -1,17 +1,17 @@
 package petcare.petcare.security;
 
-import org.springframework.context.annotation.Bean;  // Importa la anotación Bean para definir beans de Spring
-import org.springframework.context.annotation.Configuration;  // Importa la anotación Configuration para indicar que esta clase es de configuración
-import org.springframework.security.authentication.AuthenticationManager;  // Importa el AuthenticationManager para manejar la autenticación
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;  // Configuración de autenticación de Spring Security
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;  // Importa la clase HttpSecurity para configurar la seguridad HTTP
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;  // Activa la configuración de seguridad web en Spring
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;  // Importa el codificador de contraseñas BCrypt
-import org.springframework.security.crypto.password.PasswordEncoder;  // Interfaz para codificar contraseñas
-import org.springframework.security.web.SecurityFilterChain;  // Importa la clase SecurityFilterChain para configurar filtros de seguridad
-import lombok.RequiredArgsConstructor;  // Importa la anotación RequiredArgsConstructor de Lombok para crear el constructor con los campos requeridos
-import petcare.petcare.security.CustomUserDetailsService;  // Importa el servicio personalizado para cargar detalles de usuario
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;  // Utilizado para construir el AuthenticationManager
+import org.springframework.context.annotation.Bean; 
+import org.springframework.context.annotation.Configuration; 
+import org.springframework.security.authentication.AuthenticationManager; 
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration; 
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;  
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;  
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;  
+import org.springframework.security.crypto.password.PasswordEncoder; 
+import org.springframework.security.web.SecurityFilterChain; 
+import lombok.RequiredArgsConstructor;  
+import petcare.petcare.security.CustomUserDetailsService;  
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;  
 
 @Configuration  // Indica que esta clase contiene configuración de Spring
 @EnableWebSecurity  // Habilita la configuración de seguridad web

@@ -1,23 +1,23 @@
 package petcare.petcare.controller;
 
-import lombok.RequiredArgsConstructor; // Lombok genera el constructor con todas las dependencias 'final'
-import org.springframework.beans.factory.annotation.Value; // Para inyectar valores desde application.properties
-import org.springframework.data.domain.Page; // Para trabajar con paginación de datos
-import org.springframework.data.domain.Pageable; // Para manejar la paginación de resultados
-import org.springframework.data.web.PageableDefault; // Para establecer valores predeterminados en la paginación
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // Para obtener los detalles del usuario autenticado
-import org.springframework.security.oauth2.core.user.OAuth2User; // Para manejar usuarios autenticados con OAuth2 (Google, GitHub, etc.)
-import org.springframework.stereotype.Controller; // Para definir la clase como un controlador en Spring
-import org.springframework.ui.Model; // Para pasar datos a las vistas
-import org.springframework.web.bind.annotation.GetMapping; // Para manejar peticiones HTTP GET
-import org.springframework.web.bind.annotation.PathVariable; // Para capturar valores en la URL de la ruta
-import org.springframework.web.bind.annotation.RequestParam; // Para acceder a los parámetros pasados en la URL
+import lombok.RequiredArgsConstructor; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.data.domain.Page; 
+import org.springframework.data.domain.Pageable; 
+import org.springframework.data.web.PageableDefault; 
+import org.springframework.security.core.annotation.AuthenticationPrincipal; 
+import org.springframework.security.oauth2.core.user.OAuth2User; 
+import org.springframework.stereotype.Controller; 
+import org.springframework.ui.Model; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.PathVariable; 
+import org.springframework.web.bind.annotation.RequestParam; 
 
-import petcare.petcare.model.*; // Importamos los modelos de las entidades (User, Mascota, Veterinario, Dueno, Cita)
-import petcare.petcare.repository.*; // Importamos los repositorios para acceder a las bases de datos
+import petcare.petcare.model.*; 
+import petcare.petcare.repository.*; 
 
-import java.util.Arrays; // Para trabajar con arrays
-import java.util.List; // Para manejar listas
+import java.util.Arrays; 
+import java.util.List;
 
 @Controller // Indicamos que esta clase es un controlador de Spring
 @RequiredArgsConstructor // Lombok genera un constructor con todas las dependencias 'final'

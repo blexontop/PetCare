@@ -1,12 +1,12 @@
 package petcare.petcare.security;
 
-import jakarta.servlet.ServletException;  // Importa la clase ServletException para manejar excepciones relacionadas con servlets
-import jakarta.servlet.http.HttpServletRequest;  // Importa la clase HttpServletRequest para manejar la solicitud HTTP
-import jakarta.servlet.http.HttpServletResponse;  // Importa la clase HttpServletResponse para manejar la respuesta HTTP
-import jakarta.servlet.http.HttpSession;  // Importa la clase HttpSession para acceder a la sesión HTTP
-import org.springframework.security.core.Authentication;  // Importa la clase Authentication para obtener detalles del usuario autenticado
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;  // Interfaz para manejar el éxito de la autenticación
-import org.springframework.stereotype.Component;  // Anotación que marca esta clase como un componente de Spring
+import jakarta.servlet.ServletException;  
+import jakarta.servlet.http.HttpServletRequest;  
+import jakarta.servlet.http.HttpServletResponse;  
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;  
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler; 
+import org.springframework.stereotype.Component;  
 
 import java.io.IOException;  // Importa IOException para manejar errores de entrada/salida
 

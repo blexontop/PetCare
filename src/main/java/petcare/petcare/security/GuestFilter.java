@@ -1,13 +1,13 @@
 package petcare.petcare.security;
 
-import jakarta.servlet.Filter;  // Interfaz para definir un filtro de servlet
-import jakarta.servlet.FilterChain;  // Clase que representa la cadena de filtros en un request-response
-import jakarta.servlet.ServletException;  // Excepción lanzada en caso de error en un filtro
-import jakarta.servlet.ServletRequest;  // Interfaz que define una solicitud (request)
-import jakarta.servlet.ServletResponse;  // Interfaz que define una respuesta (response)
-import jakarta.servlet.http.HttpServletRequest;  // Clase para manejar solicitudes HTTP
-import jakarta.servlet.http.HttpSession;  // Clase para manejar la sesión HTTP
-import org.springframework.stereotype.Component;  // Anotación que marca esta clase como un componente gestionado por Spring
+import jakarta.servlet.Filter;  
+import jakarta.servlet.FilterChain;  
+import jakarta.servlet.ServletException; 
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;  
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpSession;  
+import org.springframework.stereotype.Component;  
 
 import java.io.IOException;  // Excepción relacionada con errores de entrada/salida
 

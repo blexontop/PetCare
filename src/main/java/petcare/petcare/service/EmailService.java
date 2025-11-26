@@ -1,11 +1,11 @@
 package petcare.petcare.service;
 
-import lombok.RequiredArgsConstructor; // Lombok genera el constructor con todas las dependencias 'final'
-import org.springframework.beans.factory.annotation.Value; // Para leer valores del archivo application.properties
-import org.springframework.mail.SimpleMailMessage; // Clase para enviar correos electrónicos simples
-import org.springframework.mail.javamail.JavaMailSender; // Interfaz para enviar correos electrónicos
-import org.springframework.scheduling.annotation.Async; // Para ejecutar métodos de forma asíncrona
-import org.springframework.stereotype.Service; // Para indicar que esta clase es un servicio de Spring
+import lombok.RequiredArgsConstructor; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.mail.SimpleMailMessage; 
+import org.springframework.mail.javamail.JavaMailSender; 
+import org.springframework.scheduling.annotation.Async; 
+import org.springframework.stereotype.Service; 
 
 @Service // Anotamos esta clase como un servicio de Spring
 @RequiredArgsConstructor // Lombok genera automáticamente el constructor con las dependencias 'final'

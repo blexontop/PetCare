@@ -1,9 +1,9 @@
 package petcare.petcare.controller;
 
-import lombok.RequiredArgsConstructor; // Lombok genera automáticamente el constructor con todas las dependencias 'final'
-import org.springframework.http.ResponseEntity; // Para manejar respuestas HTTP con entidades
-import org.springframework.web.bind.annotation.*; // Para definir controladores REST y manejar peticiones HTTP
-import petcare.petcare.service.EmailService; // Importamos el servicio que maneja el envío de correos electrónicos
+import lombok.RequiredArgsConstructor; 
+import org.springframework.http.ResponseEntity; 
+import org.springframework.web.bind.annotation.*; 
+import petcare.petcare.service.EmailService;
 
 @RestController // Esta clase maneja las solicitudes HTTP en una API REST
 @RequestMapping("/api/email") // Define la ruta base para todas las peticiones dentro de este controlador
@@ -15,7 +15,6 @@ public class EmailApiController {
     private final EmailService emailService;
 
     // Método para probar el envío de un email de bienvenida
-    // Ejemplo: GET /api/email/test-welcome?to=correo@ejemplo.com&name=Alejandro
     @GetMapping("/test-welcome")
     public ResponseEntity<String> testWelcome(@RequestParam String to, // Parámetro 'to' para la dirección de correo electrónico
                                               @RequestParam String name) { // Parámetro 'name' para el nombre del usuario
@@ -24,7 +23,6 @@ public class EmailApiController {
     }
 
     // Método para probar el envío de un email de confirmación
-    // Ejemplo: GET /api/email/test-confirm?to=correo@ejemplo.com&token=abc123
     @GetMapping("/test-confirm")
     public ResponseEntity<String> testConfirm(@RequestParam String to, // Parámetro 'to' para la dirección de correo electrónico
                                               @RequestParam String token) { // Parámetro 'token' para el token de confirmación
@@ -33,7 +31,6 @@ public class EmailApiController {
     }
 
     // Método para probar el envío de un email para restablecer la contraseña
-    // Ejemplo: GET /api/email/test-reset?to=correo@ejemplo.com&token=xyz789
     @GetMapping("/test-reset")
     public ResponseEntity<String> testReset(@RequestParam String to, // Parámetro 'to' para la dirección de correo electrónico
                                             @RequestParam String token) { // Parámetro 'token' para el token de restablecimiento de contraseña
@@ -42,7 +39,6 @@ public class EmailApiController {
     }
 
     // Método para probar el envío de un resumen de actividad al usuario
-    // Ejemplo: GET /api/email/test-summary?to=correo@ejemplo.com&name=Alejandro&frequency=diario&text=Resumen+de+prueba
     @GetMapping("/test-summary")
     public ResponseEntity<String> testSummary(@RequestParam String to, // Parámetro 'to' para la dirección de correo electrónico
                                               @RequestParam String name, // Parámetro 'name' para el nombre del usuario

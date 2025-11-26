@@ -1,12 +1,12 @@
 package petcare.petcare.security;
 
-import org.springframework.security.authorization.AuthorizationDecision;  // Importa la clase para decidir si la autorización es concedida o no
-import org.springframework.security.authorization.AuthorizationManager;  // Importa la interfaz para gestionar la autorización
-import org.springframework.security.core.Authentication;  // Importa la clase Authentication que contiene los detalles del usuario autenticado
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;  // Importa el contexto de autorización que contiene la solicitud HTTP
-import jakarta.servlet.http.HttpServletRequest;  // Importa la clase HttpServletRequest para manejar la solicitud HTTP
-import jakarta.servlet.http.HttpSession;  // Importa la clase HttpSession para acceder a la sesión del usuario
-import java.util.function.Supplier;  // Importa Supplier para proporcionar un objeto de tipo Authentication de forma perezosa
+import org.springframework.security.authorization.AuthorizationDecision;  
+import org.springframework.security.authorization.AuthorizationManager;  
+import org.springframework.security.core.Authentication; 
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;  
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpSession;  
+import java.util.function.Supplier; 
 
 // Clase que implementa AuthorizationManager para autorizar las solicitudes según el estado de autenticación
 public class GuestOrAuthenticatedAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
